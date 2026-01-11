@@ -10,79 +10,89 @@ class Frontend extends CI_Controller
         $this->load->model('Ta_produk_hukum_model');
         $this->load->library('form_validation');
         $this->load->helper('tanggal_helper');
+        $this->load->model('Ref_kabag_model');
+        $this->load->model('Ta_link_terkait_model');
     }
-    public function index()
-    {
-        $q = urldecode($this->input->get('q', TRUE));
-        $start = intval($this->input->get('start'));
-$sliders = $this->db->where('status', '1')
-                        ->order_by('urutan', 'ASC')
-                        ->order_by('id_slider', 'DESC')
-                        ->get('ta_slider')
-                        ->result();
-        if ($q <> '') {
-            $config['base_url'] = base_url() . 'ta_produk_hukum?q=' . urlencode($q);
-            $config['first_url'] = base_url() . 'ta_produk_hukum?q=' . urlencode($q);
-        } else {
-            $config['base_url'] = base_url() . 'ta_produk_hukum';
-            $config['first_url'] = base_url() . 'ta_produk_hukum';
-        }
-
-        $config['per_page'] = 4;
-        $config['page_query_string'] = TRUE;
-        $config['total_rows'] = $this->Ta_produk_hukum_model->total_rows($q);
-        $ta_produk_hukum = $this->Ta_produk_hukum_model->get_limit_data($config['per_page'], $start, $q);
-
-        $this->load->library('pagination');
-        $this->pagination->initialize($config);
-
-
-        //$ta_berita = $this->Ta_berita_model->get_limit_data($config['per_page'], $start, $q);
-
-        $ta_info_hukum = $this->db->query("SELECT * FROM ta_info_hukum 
-			LEFT JOIN ref_kategori_info ON
-			ta_info_hukum.id_kategori_info=ref_kategori_info.id_kategori
-            
-			ORDER BY tgl DESC LIMIT 4")->result();
-        // $ta_info_hukum_mou = $this->Ta_info_hukum_model->get_data_mou($config['per_page'], $start);
-        // $ta_info_hukum_edaran = $this->Ta_info_hukum_model->get_data_edaran($config['per_page'], $start);
-
-        $ta_berita = $this->db->query('SELECT * FROM ta_berita ORDER BY tgl_insert DESC')->result();
-        $ta_produk_hukum_populer = $this->db->query("SELECT * FROM ta_produk_hukum 
-			LEFT JOIN ref_kategori ON
-			ta_produk_hukum.id_kategori=ref_kategori.id_kategori
-            WHERE ref_kategori.id_kategori IN (SELECT id_kategori FROM ref_kategori WHERE status !=0)
-			ORDER BY dilihat DESC LIMIT 5")->result();
-
-        $ref_kategori_notperbub = $this->db->get_where('ref_kategori', 'status=1 AND id_kategori<>2')->result();
-        $ref_kategori = $this->db->get_where('ref_kategori', 'status=1')->result();
-        $ref_kategori_statistik = $this->db->query('SELECT * FROM ref_kategori WHERE id_kategori IN(2,3,5)')->result();
-        //$ref_status_peraturan = $this->db->query('select * from ref_status_peraturan WHERE status<>1')->result();
-        $link_terkait = $this->db->query('SELECT * FROM ta_link_terkait')->result();
-
-        $v_jum = $this->db->query('SELECT * FROM v_jum WHERE id_kategori IN (3,5) ORDER BY id_kategori ')->result();
-
-        $data = array(
-            'ta_produk_hukum_data' => $ta_produk_hukum,
-            'q' => $q,
-            'sliders' => $sliders,
-            'pagination' => $this->pagination->create_links(),
-            'total_rows' => $config['total_rows'],
-            'ta_berita' => $ta_berita,
-            'start' => $start,
-            'ta_info_hukum' => $ta_info_hukum,
-            'ref_kategori' => $ref_kategori,
-            'ref_kategori_statistik' => $ref_kategori_statistik,
-            'ref_kategori_notperbub' => $ref_kategori_notperbub,
-            //'ref_status_peraturan' => $ref_status_peraturan,
-            'ta_produk_hukum_populer' => $ta_produk_hukum_populer,
-            'link_terkait' => $link_terkait,
-            'v_jum' => $v_jum
-        );
-
-        $this->template->load('frontend/template_public', 'frontend/beranda', $data);
+  public function index()
+{
+    $q = urldecode($this->input->get('q', TRUE));
+    $start = intval($this->input->get('start'));
+    
+    // Konfigurasi Pagination & Pencarian (Logika Lama)
+    if ($q <> '') {
+        $config['base_url'] = base_url() . 'frontend/index?q=' . urlencode($q);
+        $config['first_url'] = base_url() . 'frontend/index?q=' . urlencode($q);
+    } else {
+        $config['base_url'] = base_url() . 'frontend/index';
+        $config['first_url'] = base_url() . 'frontend/index';
     }
 
+    $config['per_page'] = 10;
+    $config['page_query_string'] = TRUE;
+    $config['total_rows'] = $this->Ta_produk_hukum_model->total_rows($q);
+    $ta_produk_hukum = $this->Ta_produk_hukum_model->get_limit_data($config['per_page'], $start, $q);
+$links = $this->Ta_link_terkait_model->get_active_links();
+    $this->load->library('pagination');
+    $this->pagination->initialize($config);
+
+    
+    $this->load->model('Ref_kabag_model'); 
+    $this->load->model('Ta_berita_model');
+   
+    $stats = array();
+    
+    // 1. Jumlah Peraturan (Cari yang mengandung kata 'Peraturan')
+    $stats['peraturan'] = $this->db->query("
+        SELECT COUNT(*) as total FROM ta_produk_hukum 
+        JOIN ref_kategori ON ta_produk_hukum.id_kategori = ref_kategori.id_kategori 
+        WHERE ref_kategori.kategori LIKE '%Peraturan%'
+    ")->row()->total;
+
+    // 2. Jumlah Monografi
+    $stats['monografi'] = $this->db->query("
+        SELECT COUNT(*) as total FROM ta_produk_hukum 
+        JOIN ref_kategori ON ta_produk_hukum.id_kategori = ref_kategori.id_kategori 
+        WHERE ref_kategori.kategori LIKE '%Monografi%'
+    ")->row()->total;
+
+    // 3. Jumlah Artikel
+    $stats['artikel'] = $this->db->query("
+        SELECT COUNT(*) as total FROM ta_produk_hukum 
+        JOIN ref_kategori ON ta_produk_hukum.id_kategori = ref_kategori.id_kategori 
+        WHERE ref_kategori.kategori LIKE '%Artikel%'
+    ")->row()->total;
+
+    // 4. Jumlah Putusan
+    $stats['putusan'] = $this->db->query("
+        SELECT COUNT(*) as total FROM ta_produk_hukum 
+        JOIN ref_kategori ON ta_produk_hukum.id_kategori = ref_kategori.id_kategori 
+        WHERE ref_kategori.kategori LIKE '%Putusan%'
+    ")->row()->total;
+
+
+    // Ambil Data Pendukung Lainnya
+    $sliders = $this->db->where('status', '1')->order_by('urutan', 'ASC')->order_by('id_slider', 'DESC')->get('ta_slider')->result();
+    $ta_berita = $this->Ta_berita_model->get_limit_data(4, 0); // Ambil 4 berita terbaru
+    $ref_kategori = $this->db->get('ref_kategori')->result();
+    $kabag_active = $this->Ref_kabag_model->get_active_kabag();
+
+    // Packing Data
+    $data = array(
+        'ta_produk_hukum_data' => $ta_produk_hukum,
+        'q' => $q,
+        'pagination' => $this->pagination->create_links(),
+        'total_rows' => $config['total_rows'],
+        'start' => $start,
+        'sliders' => $sliders,
+        'ta_berita' => $ta_berita,
+        'ref_kategori' => $ref_kategori,
+        'kabag' => $kabag_active,
+        'stats' => $stats, // <-- Variabel statistik dikirim ke view
+        'links' => $links,
+    );
+
+    $this->template->load('frontend/template_public','frontend/beranda', $data);
+}
     public function visimisi()
     {
         $visimisi = $this->db->query('SELECT * FROM ref_visimisi')->result();

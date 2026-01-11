@@ -1,162 +1,528 @@
 <style>
-    /* Styling untuk Carousel Modern */
-    .carousel-item {
-        height: 500px; /* Tinggi slider */
-        min-height: 350px;
-        background: no-repeat center center scroll;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
+    /* --- MODERN TYPOGRAPHY --- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+    :root {
+        --primary: #2563eb;       
+        --primary-dark: #1e40af;
+        --secondary: #3b82f6;
+        --accent: #0ea5e9;        
+        --bg-body: #f8fafc;       
+        --text-main: #0f172a;     
+        --text-muted: #64748b;    
+        --radius-xl: 24px;
+        --radius-lg: 16px;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* --- BACKGROUND DECORATION --- */
+    .bg-blob {
+        position: absolute;
+        filter: blur(80px);
+        opacity: 0.6;
+        z-index: -1;
+    }
+    .blob-1 {
+        top: 20%; left: -10%;
+        width: 500px; height: 500px;
+        background: #dbeafe;
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        animation: floatBlob 10s infinite alternate;
+    }
+    .blob-2 {
+        bottom: 10%; right: -5%;
+        width: 400px; height: 400px;
+        background: #e0f2fe;
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        animation: floatBlob 12s infinite alternate-reverse;
+    }
+
+    @keyframes floatBlob {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        100% { transform: translate(20px, 40px) rotate(10deg); }
+    }
+
+    /* --- HERO SLIDER --- */
+    .hero-wrapper {
+        position: relative;
+        padding: 20px;
+        background: #fff;
+    }
+
+    .slider-container {
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.15);
         position: relative;
     }
-    
-    /* Overlay Gelap agar teks terbaca */
-    .carousel-item::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+
+    .carousel-item {
+        height: 550px;
+        background-position: center;
+        background-size: cover;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    .carousel-caption {
-        bottom: 20%;
-        text-align: left;
-        padding-left: 5%;
-        padding-right: 5%;
-    }
-
-    .carousel-caption h2 {
-        font-weight: 800;
-        font-size: 2.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-        animation: fadeInUp 1s ease-in-out;
-    }
-
-    .carousel-caption p {
-        font-size: 1.2rem;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-        animation: fadeInUp 1s ease-in-out 0.3s; /* Delay sedikit */
-        animation-fill-mode: both;
-    }
-
-    /* Search Box Floating (Melayang di atas slider/konten) */
-    .search-card-wrapper {
-        margin-top: -80px; /* Menarik ke atas agar menumpuk slider */
+    /* --- SEARCH SECTION --- */
+    .search-section {
+        margin-top: -60px;
         position: relative;
         z-index: 10;
-        padding: 0 15px;
+        padding: 0 20px;
     }
 
     .search-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 30px;
+        padding: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+
+    /* .brand-title {
+        font-weight: 800;
+        font-size: 2rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    } */
+
+    .form-control-modern {
+        background: #f1f5f9;
+        border: 2px solid transparent;
+        border-radius: 15px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-main);
+        transition: all 0.3s ease;
+    }
+
+    .form-control-modern:focus {
+        background: #fff;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-search-modern {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
         border: none;
         border-radius: 15px;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        padding: 30px;
-    }
-
-    /* Animasi Teks */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translate3d(0, 40px, 0); }
-        to { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-
-    /* Styling elemen lain */
-    .hukum-item {
+        padding: 15px 30px;
+        font-weight: 700;
+        width: 100%;
         transition: all 0.3s;
-        border-left: 5px solid #0d6efd;
-        background-color: #fff;
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
     }
-    .hukum-item:hover {
-        transform: translateX(5px);
-        background-color: #f8f9fa;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+
+    .btn-search-modern:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.5);
+        color: white;
     }
-    .widget-header {
-        border-bottom: 3px solid #0d6efd;
-        padding-bottom: 10px;
+
+    /* --- STATS SECTION (NEW) --- */
+    .stats-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 20px -5px rgba(0,0,0,0.03);
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+        border-color: var(--primary);
+    }
+
+    .stats-icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    .bg-blue-soft { background: #eff6ff; color: #2563eb; }
+    .bg-green-soft { background: #f0fdf4; color: #16a34a; }
+    .bg-purple-soft { background: #faf5ff; color: #9333ea; }
+    .bg-orange-soft { background: #fff7ed; color: #ea580c; }
+
+    .stats-info h3 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--text-main);
+        line-height: 1;
+        margin-bottom: 5px;
+    }
+
+    .stats-info p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* --- CONTENT CARDS --- */
+    .section-label {
+        display: inline-block;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        background: rgba(14, 165, 233, 0.1);
+        padding: 5px 15px;
+        border-radius: 20px;
+    }
+
+    .law-item {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        padding: 25px;
         margin-bottom: 20px;
-        font-weight: bold;
-        color: #333;
-    }
-    .profile-img-box {
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 15px;
-        border-radius: 50%;
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s;
+        position: relative;
         overflow: hidden;
-        border: 4px solid #0d6efd;
-        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
+    }
+
+    .law-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary);
+    }
+
+    .law-item::after {
+        content: '';
+        position: absolute;
+        left: 0; top: 20%; bottom: 20%;
+        width: 4px;
+        background: var(--bg-body);
+        border-radius: 0 4px 4px 0;
+        transition: all 0.3s;
+    }
+
+    .law-item:hover::after {
+        background: var(--primary);
+        top: 15%; bottom: 15%;
+    }
+
+    .law-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        text-decoration: none;
+        line-height: 1.5;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .law-title:hover {
+        color: var(--primary);
+    }
+
+    /* --- NEWS CARDS --- */
+    .news-card-modern {
+        background: #fff;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.03);
+        height: 100%;
+        transition: all 0.4s ease;
+    }
+
+    .news-card-modern:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+    }
+
+    .news-img-container {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .news-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s;
+    }
+
+    .news-card-modern:hover .news-img-container img {
+        transform: scale(1.08);
+    }
+
+    .news-date-badge {
+        position: absolute;
+        top: 15px; left: 15px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* --- SIDEBAR WIDGETS --- */
+    .widget-island {
+        background: #fff;
+        border-radius: var(--radius-xl);
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.03);
+        text-align: center;
+        border: 1px solid #f1f5f9;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-blob-container {
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 20px;
+        position: relative;
+    }
+
+    .profile-blob-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 45% 55% 70% 30% / 30% 30% 70% 70%;
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+        border: 4px solid #fff;
+        transition: border-radius 0.5s ease;
+    }
+    
+    .widget-island:hover .profile-blob-img {
+        border-radius: 50%;
+    }
+
+    .btn-profile {
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-profile:hover {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .carousel-item { height: 350px; }
+        .search-card { padding: 25px; border-radius: 20px; }
+        .brand-title { font-size: 1.5rem; }
+    }
+
+    .related-links-section {
+        background: #fff;
+        padding: 50px 0;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .section-title-center {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .section-title-center h3 {
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 10px;
+    }
+
+    .section-title-center p {
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Infinite Scroll Animation */
+    .marquee-container {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .marquee-content {
+        display: flex;
+        gap: 50px;
+        animation: scroll 30s linear infinite;
+        width: max-content;
+        padding: 10px 0;
+    }
+    
+    .marquee-content:hover {
+        animation-play-state: paused; /* Berhenti saat di-hover */
+    }
+
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); } /* Geser setengah karena konten diduplikasi */
+    }
+
+    .link-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        width: 150px;
+        transition: transform 0.3s;
+    }
+
+    .link-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .link-logo-box {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 15px;
+        padding: 15px;
+        transition: all 0.3s;
+    }
+
+    .link-item:hover .link-logo-box {
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+        border-color: var(--primary);
+    }
+
+    .link-logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: grayscale(100%); /* Hitam putih agar rapi */
+        opacity: 0.7;
+        transition: all 0.3s;
+    }
+
+    .link-item:hover .link-logo-box img {
+        filter: grayscale(0%); /* Berwarna saat hover */
+        opacity: 1;
+    }
+
+    .link-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-align: center;
+        line-height: 1.2;
+        transition: color 0.3s;
+    }
+
+    .link-item:hover .link-name {
+        color: var(--primary);
     }
 </style>
 
-<?php if(!empty($sliders)): ?>
-<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        <?php foreach($sliders as $key => $slide): ?>
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="<?= $key ?>" class="<?= ($key==0) ? 'active' : '' ?>" aria-current="true" aria-label="Slide <?= $key+1 ?>"></button>
-        <?php endforeach; ?>
-    </div>
-    <div class="carousel-inner">
-        <?php foreach($sliders as $key => $slide): ?>
-            <div class="carousel-item <?= ($key==0) ? 'active' : '' ?>" style="background-image: url('<?= base_url('uploads/slider/'.$slide->foto) ?>')">
-                <div class="carousel-caption d-none d-md-block">
-                    <h2><?= $slide->judul ?></h2>
-                    <p><?= $slide->sub_judul ?></p>
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+
+<div class="hero-wrapper">
+    <div class="container-fluid p-0">
+        <div class="container slider-container p-0">
+            <?php if(!empty($sliders)): ?>
+            <div id="modernCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-indicators">
+                    <?php foreach($sliders as $key => $slide): ?>
+                        <button type="button" data-bs-target="#modernCarousel" data-bs-slide-to="<?= $key ?>" class="<?= ($key==0) ? 'active' : '' ?>" aria-current="true"></button>
+                    <?php endforeach; ?>
                 </div>
+                <div class="carousel-inner">
+                    <?php foreach($sliders as $key => $slide): ?>
+                        <div class="carousel-item <?= ($key==0) ? 'active' : '' ?>" style="background-image: url('<?= base_url('uploads/slider/'.$slide->foto) ?>');"></div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#modernCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#modernCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
             </div>
-        <?php endforeach; ?>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
-<?php else: ?>
-<div class="carousel slide">
-    <div class="carousel-inner">
-        <div class="carousel-item active" style="background-color: #0043a8;">
-            <div class="carousel-caption d-block">
-                <h2>Jaringan Dokumentasi dan Informasi Hukum</h2>
-                <p>Kabupaten Donggala</p>
-            </div>
+            <?php else: ?>
+                <div class="carousel-item active" style="background-color: var(--primary); height: 400px; display:flex; align-items:center; justify-content:center;">
+                    <h3 class="text-white">JDIH Kabupaten Donggala</h3>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
-<?php endif; ?>
 
-<div class="container search-card-wrapper mb-5">
+<div class="container search-section">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card search-card">
+        <div class="col-xl-10 col-lg-11">
+            <div class="search-card">
+                <div class="mb-4">
+                    <h5 class="text-uppercase text-muted fw-bold ls-1" style="letter-spacing: 2px; font-size: 0.85rem;">Selamat Datang di</h5>
+                    <h1 class="brand-title">JDIH KABUPATEN DONGGALA</h1>
+                    <p class="text-muted mb-0">Portal Integrasi Data Peraturan Perundang-undangan Daerah</p>
+                </div>
+
                 <form action="<?php echo site_url('frontendprodukhukum/produk_hukum_list'); ?>" method="get">
                     <div class="row g-3">
-                        <div class="col-md-12 mb-1">
-                            <label class="form-label fw-bold text-primary"><i class="bi bi-search"></i> Cari Produk Hukum</label>
-                            <input type="text" class="form-control form-control-lg bg-light border-0" placeholder="Ketik kata kunci (misal: Pajak, Retribusi)..." name="tentang">
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control form-control-modern" placeholder="Kata kunci (misal: Pajak, Retribusi)" name="tentang">
                         </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Nomor Peraturan" name="no_peraturan">
+                        <div class="col-lg-2 col-md-4">
+                            <input type="text" class="form-control form-control-modern" placeholder="Nomor" name="no_peraturan">
                         </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Tahun" name="tahun">
+                        <div class="col-lg-2 col-md-4">
+                            <input type="text" class="form-control form-control-modern" placeholder="Tahun" name="tahun">
                         </div>
-                        <div class="col-md-4">
-                            <select class="form-select" name="ref_kategori">
-                                <option value="">- Semua Kategori -</option>
-                                <?php foreach($ref_kategori as $value) { ?>
-                                    <option value="<?php echo $value->id_kategori ?>"><?php echo $value->kategori ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="col-md-2 d-grid">
-                            <button class="btn btn-primary fw-bold" type="submit">Cari</button>
+                        <div class="col-lg-3 col-md-4">
+                            <button class="btn-search-modern" type="submit">
+                                <i class="bi bi-search me-2"></i> Cari Dokumen
+                            </button>
                         </div>
                         <input type="hidden" name="ref_status_peraturan">
                     </div>
@@ -166,68 +532,170 @@
     </div>
 </div>
 
-<div class="container mb-5">
-    <div class="row">
+<div class="container mt-5">
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stats-icon-box bg-blue-soft">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <div class="stats-info">
+                    <h3><?php echo number_format($stats['peraturan']); ?></h3>
+                    <p>Peraturan</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stats-icon-box bg-green-soft">
+                    <i class="bi bi-book-half"></i>
+                </div>
+                <div class="stats-info">
+                    <h3><?php echo number_format($stats['monografi']); ?></h3>
+                    <p>Monografi</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stats-icon-box bg-purple-soft">
+                    <i class="bi bi-newspaper"></i>
+                </div>
+                <div class="stats-info">
+                    <h3><?php echo number_format($stats['artikel']); ?></h3>
+                    <p>Artikel Hukum</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stats-icon-box bg-orange-soft">
+                    <i class="bi bi-hammer"></i>
+                </div>
+                <div class="stats-info">
+                    <h3><?php echo number_format($stats['putusan']); ?></h3>
+                    <p>Putusan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="related-links-section mt-5">
+    <div class="container">
+        <div class="section-title-center">
+            <span class="section-label">Jejaring</span>
+            <h3>JDIH Se-Sulawesi Tengah</h3>
+            <p>Terintegrasi dengan jaringan dokumentasi hukum Kabupaten/Kota lainnya.</p>
+        </div>
+
+        <?php if(!empty($links)): ?>
+        <div class="marquee-container">
+            <div class="marquee-content">
+                <?php 
+                // Loop 1 (Asli)
+                foreach($links as $link): ?>
+                    <a href="<?php echo $link->url; ?>" target="_blank" class="link-item" title="<?php echo $link->nama_link; ?>">
+                        <div class="link-logo-box">
+                            <?php if(!empty($link->logo)): ?>
+                                <img src="<?php echo base_url('uploads/links/'.$link->logo); ?>" alt="<?php echo $link->nama_link; ?>">
+                            <?php else: ?>
+                                <i class="bi bi-link-45deg fs-1 text-muted"></i>
+                            <?php endif; ?>
+                        </div>
+                        <span class="link-name"><?php echo $link->nama_link; ?></span>
+                    </a>
+                <?php endforeach; ?>
+
+                <?php 
+                // Loop 2 (Duplikat untuk efek sambung menyambung)
+                foreach($links as $link): ?>
+                    <a href="<?php echo $link->url; ?>" target="_blank" class="link-item" title="<?php echo $link->nama_link; ?>">
+                        <div class="link-logo-box">
+                            <?php if(!empty($link->logo)): ?>
+                                <img src="<?php echo base_url('uploads/links/'.$link->logo); ?>" alt="<?php echo $link->nama_link; ?>">
+                            <?php else: ?>
+                                <i class="bi bi-link-45deg fs-1 text-muted"></i>
+                            <?php endif; ?>
+                        </div>
+                        <span class="link-name"><?php echo $link->nama_link; ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php else: ?>
+            <div class="text-center text-muted py-4">
+                <small>Belum ada data link terkait.</small>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+<div class="container py-5" style="margin-bottom: 50px;">
+    <div class="row g-5">
+        
         <div class="col-lg-8">
             
             <div class="mb-5">
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-                    <h4 class="mb-0 text-primary fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Produk Hukum Terbaru</h4>
-                    <a href="<?php echo base_url('frontendprodukhukum/produk_hukum_list') ?>" class="btn btn-sm btn-outline-primary rounded-pill">Lihat Semua <i class="bi bi-arrow-right"></i></a>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <span class="section-label">Update Terbaru</span>
+                        <h3 class="fw-bold mb-0">Produk Hukum Daerah</h3>
+                    </div>
+                    <a href="<?php echo base_url('frontendprodukhukum/produk_hukum_list') ?>" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Lihat Semua</a>
                 </div>
 
-                <div class="list-group shadow-sm rounded-3 overflow-hidden border-0">
+                <div class="vstack gap-3">
                     <?php foreach($ta_produk_hukum_data as $value) { ?>
-                        <a href="<?php echo base_url()?>frontendprodukhukum/produk_hukum_page/<?php echo $value->id_produk_hukum ?>" class="list-group-item list-group-item-action p-3 hukum-item d-flex align-items-start gap-3 border-bottom">
-                            <div class="fs-2 text-danger bg-light rounded p-2">
-                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                        <div class="law-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-light text-primary fw-bold px-3 py-2 rounded-pill">
+                                    <i class="bi bi-bookmark-fill me-1"></i> <?php echo $value->kategori; ?>
+                                </span>
+                                <small class="text-muted fw-bold">
+                                    <i class="bi bi-clock me-1"></i> <?php echo tanggal($value->tgl_peraturan); ?>
+                                </small>
                             </div>
-                            <div class="w-100">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 fw-bold text-dark">
-                                        <?php echo $value->kategori; ?> Nomor <?php echo $value->no_peraturan; ?>
-                                    </h6>
-                                    <span class="badge bg-primary rounded-pill"><?php echo $value->tahun; ?></span>
-                                </div>
-                                <p class="mb-1 text-muted small" style="line-height: 1.5;">
-                                    <?php echo substr($value->tentang, 0, 180) . (strlen($value->tentang) > 180 ? '...' : ''); ?>
-                                </p>
-                                <small class="text-secondary"><i class="bi bi-calendar3"></i> <?php echo tanggal($value->tgl_peraturan); ?></small>
-                            </div>
-                        </a>
+                            <a href="<?php echo base_url()?>frontendprodukhukum/produk_hukum_page/<?php echo $value->id_produk_hukum ?>" class="law-title">
+                                Nomor <?php echo $value->no_peraturan; ?> Tahun <?php echo $value->tahun; ?> tentang <?php echo $value->tentang; ?>
+                            </a>
+                        </div>
                     <?php } ?>
                 </div>
             </div>
 
             <div class="mb-5">
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-                    <h4 class="mb-0 text-primary fw-bold"><i class="bi bi-newspaper me-2"></i> Berita Terkini</h4>
-                    <a href="<?php echo base_url('frontendberita/berita_list') ?>" class="btn btn-sm btn-outline-primary rounded-pill">Arsip Berita</a>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <span class="section-label" style="color: var(--primary);">Informasi</span>
+                        <h3 class="fw-bold mb-0">Kabar Berita</h3>
+                    </div>
+                    <a href="<?php echo base_url('frontendberita/berita_list') ?>" class="btn btn-outline-dark rounded-pill px-4 fw-bold">Arsip Berita</a>
                 </div>
 
-                <div class="row g-3">
+                <div class="row g-4">
                     <?php foreach($ta_berita as $value) { ?>
                         <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow overflow-hidden">
-                                <?php if(!empty($value->file)): ?>
-                                    <div style="height: 200px; overflow: hidden;">
-                                        <img src="<?php echo base_url('uploads/berita/medium/'.$value->file) ?>" class="card-img-top" alt="Berita" style="object-fit: cover; height: 100%; width: 100%;">
+                            <div class="news-card-modern">
+                                <div class="news-img-container">
+                                    <?php if(!empty($value->file)): ?>
+                                        <img src="<?php echo base_url('uploads/berita/medium/'.$value->file) ?>" alt="Berita">
+                                    <?php else: ?>
+                                        <div class="d-flex align-items-center justify-content-center bg-light w-100 h-100 text-muted">
+                                            <i class="bi bi-image fs-1"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="news-date-badge">
+                                        <?php echo date('d M Y', strtotime($value->tgl_insert)); ?>
                                     </div>
-                                <?php else: ?>
-                                    <div class="bg-light text-center py-5 text-muted">
-                                        <i class="bi bi-image fs-1"></i>
-                                    </div>
-                                <?php endif; ?>
-                                
-                                <div class="card-body">
-                                    <div class="d-flex gap-2 mb-2">
-                                        <span class="badge bg-light text-dark border"><i class="bi bi-calendar"></i> <?php echo date('d M Y', strtotime($value->tgl_insert)); ?></span>
-                                    </div>
-                                    <h6 class="card-title lh-base">
-                                        <a href="#" class="text-decoration-none text-dark fw-bold stretched-link">
-                                            <?php echo $value->judul; ?>
+                                </div>
+                                <div class="p-4">
+                                    <h5 class="fw-bold mb-2 lh-base" style="font-size: 1.1rem;">
+                                        <a href="#" class="text-decoration-none text-dark stretched-link">
+                                            <?php echo substr($value->judul, 0, 60) . '...'; ?>
                                         </a>
-                                    </h6>
+                                    </h5>
                                 </div>
                             </div>
                         </div>
@@ -238,39 +706,45 @@
 
         <div class="col-lg-4">
             
-            <div class="card shadow-sm border-0 mb-4 rounded-3">
-                <div class="card-body p-4 text-center">
-                    <h5 class="widget-header border-0 mb-4">Kepala Bagian Hukum</h5>
-                    <div class="profile-img-box">
-                        <img src="https://via.placeholder.com/150" alt="Foto Kabag" class="img-fluid" style="width:100%; height:100%; object-fit:cover;">
-                    </div>
-                    <h5 class="fw-bold mb-1">Nama Pejabat, S.H., M.H.</h5>
-                    <p class="text-muted small mb-3">Kepala Bagian Hukum Setda Kab. Donggala</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm rounded-pill w-100">Lihat Profil Lengkap</a>
+            <div class="widget-island">
+                <h6 class="text-uppercase text-muted fw-bold mb-4 ls-1" style="font-size: 0.75rem;">
+                    <?php echo isset($kabag->jabatan) ? $kabag->jabatan : 'Kepala Bagian Hukum'; ?>
+                </h6>
+                
+                <div class="profile-blob-container">
+                    <?php if(isset($kabag->foto) && !empty($kabag->foto) && file_exists(FCPATH . 'uploads/pejabat/' . $kabag->foto)): ?>
+                        <img src="<?php echo base_url('uploads/pejabat/'.$kabag->foto); ?>" alt="Foto Pejabat" class="profile-blob-img">
+                    <?php else: ?>
+                        <img src="<?php echo base_url(); ?>template/img/kabag.jpg" onerror="this.src='https://placehold.co/150x150/e2e8f0/1e293b?text=Foto+Kabag'" alt="Default Pejabat" class="profile-blob-img">
+                    <?php endif; ?>
                 </div>
+                
+                <h5 class="fw-bold text-dark mb-1">
+                    <?php echo isset($kabag->nama) ? $kabag->nama : '-'; ?>
+                </h5>
+                <p class="text-muted small mb-4">
+                    <?php echo isset($kabag->nip) && !empty($kabag->nip) ? 'NIP. '.$kabag->nip : 'Sekretariat Daerah Kab. Donggala'; ?>
+                </p>
+                <a href="#" class="btn btn-profile w-100">Lihat Profil Lengkap</a>
             </div>
 
-            <div class="card bg-gradient-primary text-white mb-4 shadow rounded-3 border-0" style="background: linear-gradient(45deg, #0d6efd, #0a58ca);">
-                <div class="card-body text-center p-4">
-                    <img src="<?php echo base_url(); ?>template/img/logo-jdih.png" width="60" class="mb-3" style="filter: brightness(0) invert(1);">
-                    <h3 class="fw-bold">JDIH NASIONAL</h3>
-                    <p class="mb-4 opacity-75">Terintegrasi dengan Jaringan Dokumentasi dan Informasi Hukum Nasional</p>
-                    <a href="https://jdihn.go.id" target="_blank" class="btn btn-light text-primary fw-bold rounded-pill w-100 shadow-sm">Kunjungi Portal JDIHN</a>
+            <div class="widget-island p-4 text-start border-0" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color:white;">
+                <div class="position-relative" style="z-index: 2;">
+                    <i class="bi bi-globe2 fs-1 text-white-50 mb-3 d-block"></i>
+                    <h4 class="fw-bold mb-2">JDIH NASIONAL</h4>
+                    <p class="small opacity-75 mb-4">Terintegrasi dengan Jaringan Dokumentasi dan Informasi Hukum Nasional.</p>
+                    <a href="https://jdihn.go.id" target="_blank" class="btn btn-light text-primary fw-bold rounded-pill w-100 shadow-sm border-0">
+                        Kunjungi Portal <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
                 </div>
+                <div style="position: absolute; top: -30px; right: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
             </div>
 
-            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                <div class="card-header bg-white fw-bold py-3 border-bottom">
-                    <i class="bi bi-geo-alt-fill text-danger me-2"></i> Lokasi Kantor
+            <div class="widget-island p-0 border-0 shadow-sm">
+                <div class="p-3 bg-white text-start border-bottom">
+                    <small class="fw-bold d-block text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Lokasi Kantor</small>
                 </div>
-                <div class="card-body p-0">
-                    <div class="ratio ratio-4x3">
-                       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.366403567794!2d119.7369!3d-0.6548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMMKwMzknMTcuMyJTIDExOcKwNDQnMTIuOCJF!5e0!3m2!1sid!2sid!4v1625642000000!5m2!1sid!2sid" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-                    <div class="p-3 bg-light border-top">
-                        <small class="text-muted d-block">Bagian Hukum Sekretariat Daerah Kabupaten Donggala</small>
-                    </div>
-                </div>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127649.3236750035!2d119.7347185!3d-0.6695286!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2d8bedd3e300c01f%3A0x3030bfbcaf77380!2sKabupaten%20Donggala%2C%20Sulawesi%20Tengah!5e0!3m2!1sid!2sid!4v1647833000000!5m2!1sid!2sid" style="border:0; width: 100%; height: 280px;" allowfullscreen="" loading="lazy"></iframe>
             </div>
 
         </div>

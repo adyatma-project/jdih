@@ -22,14 +22,13 @@
                 <?php echo $this->session->userdata('message') <> '' ? $this->session->userdata('message') : ''; ?>
             </div>
             <div class="row" style="margin-bottom: 10px">
-                <div class="col-md-4"></div>
-                <div class="col-md-4 text-center"></div>
+                <div class="col-md-8"></div>
                 <div class="col-md-4 text-right">
                     <?php echo anchor(site_url('ta_slider/create'), '<i class="fa fa-plus"></i> Tambah Slider', 'class="btn btn-primary"'); ?>
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" style="margin-bottom: 10px">
+                <table class="table table-bordered table-striped" style="margin-bottom: 10px">
                     <tr>
                         <th width="30">No</th>
                         <th>Foto</th>
@@ -37,16 +36,16 @@
                         <th>Sub Judul</th>
                         <th>Urutan</th>
                         <th>Status</th>
-                        <th width="150">Aksi</th>
+                        <th width="150" class="text-center">Aksi</th>
                     </tr>
                     <?php
                     foreach ($ta_slider_data as $slider) {
                     ?>
                         <tr>
-                            <td width="30"><?php echo ++$start ?></td>
+                            <td><?php echo ++$start ?></td>
                             <td>
                                 <?php if($slider->foto != ""): ?>
-                                    <img src="<?php echo base_url()."uploads/slider/".$slider->foto ?>" width="150px" style="border-radius:5px;">
+                                    <img src="<?php echo base_url()."uploads/slider/".$slider->foto ?>" width="120px" style="border-radius:5px;">
                                 <?php else: ?>
                                     <span class="label label-warning">No Image</span>
                                 <?php endif; ?>
@@ -61,11 +60,13 @@
                                     <span class="label label-danger">Non-Aktif</span>
                                 <?php endif; ?>
                             </td>
-                            <td style="text-align:center">
+                            <td class="text-center">
                                 <?php 
+                                echo anchor(site_url('ta_slider/read/'.$slider->id_slider),'<i class="fa fa-eye"></i>', 'class="btn btn-sm btn-success"'); 
+                                echo ' ';
                                 echo anchor(site_url('ta_slider/update/'.$slider->id_slider),'<i class="fa fa-pencil-square-o"></i>', 'class="btn btn-sm btn-info"'); 
                                 echo ' ';
-                                echo anchor(site_url('ta_slider/delete/'.$slider->id_slider),'<i class="fa fa-trash-o"></i>','class="btn btn-sm btn-danger" onclick="javasciprt: return confirm(\'Yakin Ingin Hapus ?\')"');
+                                echo anchor(site_url('ta_slider/delete/'.$slider->id_slider),'<i class="fa fa-trash-o"></i>','class="btn btn-sm btn-danger" onclick="return confirm(\'Yakin Ingin Hapus ?\')"');
                                 ?>
                             </td>
                         </tr>

@@ -32,7 +32,13 @@ class Ta_produk_hukum_model extends CI_Model
 	// get total rows
 	function total_rows($q = NULL)
 	{
+		$this->db->group_start(); // Grouping query agar AND/OR tidak berantakan
 		$this->db->like('id_produk_hukum', $q);
+		$this->db->or_like('judul', $q); // Asumsi kolom judul ada (atau 'tentang')
+		$this->db->or_like('nomor_putusan', $q);
+		$this->db->or_like('penulis', $q);
+		$this->db->or_like('isbn', $q);
+		$this->db->group_end();
 		$this->db->or_like('no_peraturan', $q);
 		$this->db->or_like('tentang', $q);
 		$this->db->or_like('tahun', $q);

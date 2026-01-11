@@ -200,8 +200,8 @@
                 <a class="navbar-brand d-flex align-items-center gap-3" href="<?php echo base_url(); ?>">
                     <img src="<?php echo base_url(); ?>template/img/logo-jdih.png" alt="Logo" width="55" height="auto">
                     <div class="brand-text text-start">
-                        <span class="brand-title">JDIH</span>
-                        <span class="brand-subtitle">KABUPATEN DONGGALA</span>
+                        <span class="brand-title">JDIH KABUPATEN DONGGALA</span>
+                        <span class="brand-subtitle">Jaringan Dokumentasi dan Informasi Hukum Kabupaten Donggala    </span>
                     </div>
                 </a>
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -307,9 +307,9 @@
                         <div class="col-sm-6">
                             <h5 class="footer-title">Tautan Cepat</h5>
                             <ul class="list-unstyled footer-links">
-                                <li><a href="#"><i class="bi bi-chevron-right"></i> Produk Hukum</a></li>
-                                <li><a href="#"><i class="bi bi-chevron-right"></i> Berita Terkini</a></li>
-                                <li><a href="#"><i class="bi bi-chevron-right"></i> Visi Misi</a></li>
+                                <li><a href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list"><i class="bi bi-chevron-right"></i> Produk Hukum</a></li>
+                                <li><a href="https://jdih.donggala.go.id/frontendberita/berita_list"><i class="bi bi-chevron-right"></i> Berita Terkini</a></li>
+                                <li><a href="https://jdih.donggala.go.id/frontend/visimisi"><i class="bi bi-chevron-right"></i> Visi Misi</a></li>
                                 <li><a href="https://jdihn.go.id" target="_blank"><i class="bi bi-box-arrow-up-right"></i> Portal JDIHN</a></li>
                             </ul>
                         </div>
@@ -319,7 +319,7 @@
                                 <div id="histats_counter"></div>
                                 <script type="text/javascript">
                                     var _Hasync= _Hasync|| [];
-                                    _Hasync.push(['Histats.start', '1,4147472,4,437,112,75,00011111']);
+                                    _Hasync.push(['Histats.start', '1,5001853,4,330,112,62,00011111']);
                                     _Hasync.push(['Histats.fasi', '1']);
                                     _Hasync.push(['Histats.track_hits', '']);
                                     (function() {
@@ -328,7 +328,7 @@
                                     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
                                     })();
                                 </script>
-                                <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?4147472&101" alt="web stats" border="0"></a></noscript>
+                                <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5001853&101" alt="web stats" border="0"></a></noscript>
                                 <small class="text-muted d-block mt-2" style="font-size: 0.7rem;">Live Traffic Monitoring</small>
                             </div>
                         </div>

@@ -3,10 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Ta_link_terkait_model extends CI_Model
+class Ref_kabag_model extends CI_Model
 {
-    public $table = 'ta_link_terkait';
-    public $id = 'id_link';
+
+    public $table = 'ref_kabag';
+    public $id = 'id_kabag';
     public $order = 'DESC';
 
     function __construct()
@@ -14,7 +15,7 @@ class Ta_link_terkait_model extends CI_Model
         parent::__construct();
     }
 
-    // Ambil data untuk Backend
+    // Ambil semua data untuk backend
     function get_all()
     {
         $this->db->order_by('urutan', 'ASC');
@@ -22,23 +23,26 @@ class Ta_link_terkait_model extends CI_Model
         return $this->db->get($this->table)->result();
     }
 
-    // Ambil data detail
+    // Ambil data detail by ID
     function get_by_id($id)
     {
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
     }
     
-    // Ambil semua link untuk Frontend
-    function get_active_links() {
-        $this->db->order_by('urutan', 'ASC');
-        $this->db->order_by('id_link', 'DESC');
-        return $this->db->get($this->table)->result();
+    // Khusus Frontend: Ambil 1 pejabat yang statusnya Aktif
+    function get_active_kabag() {
+        $this->db->where('status', '1');
+        $this->db->order_by('urutan', 'ASC'); // Prioritas urutan
+        $this->db->order_by('id_kabag', 'DESC'); // Lalu yang terbaru
+        $this->db->limit(1); // Cukup ambil 1
+        return $this->db->get($this->table)->row();
     }
 
     function total_rows($q = NULL) {
-        $this->db->like('id_link', $q);
-	    $this->db->or_like('nama_link', $q);
+        $this->db->like('id_kabag', $q);
+	    $this->db->or_like('nama', $q);
+	    $this->db->or_like('nip', $q);
 	    $this->db->from($this->table);
         return $this->db->count_all_results();
     }
@@ -46,8 +50,8 @@ class Ta_link_terkait_model extends CI_Model
     function get_limit_data($limit, $start = 0, $q = NULL) {
         $this->db->order_by('urutan', 'ASC');
         $this->db->order_by($this->id, $this->order);
-        $this->db->like('id_link', $q);
-	    $this->db->or_like('nama_link', $q);
+        $this->db->like('id_kabag', $q);
+	    $this->db->or_like('nama', $q);
 	    $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }

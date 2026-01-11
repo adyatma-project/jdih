@@ -10,6 +10,7 @@ class Ta_link_terkait extends CI_Controller
         parent::__construct();
         $this->load->model('Ta_link_terkait_model');
         $this->load->library('form_validation');
+        $this->load->library('upload');
     }
 
     public function index()
@@ -20,56 +21,30 @@ class Ta_link_terkait extends CI_Controller
             $start = intval($this->input->get('start'));
             
             if ($q <> '') {
-                $config['base_url'] = base_url() . 'ta_link_terkait/index.html?q=' . urlencode($q);
-                $config['first_url'] = base_url() . 'ta_link_terkait/index.html?q=' . urlencode($q);
+                $config['base_url'] = base_url() . 'ta_link_terkait?q=' . urlencode($q);
+                $config['first_url'] = base_url() . 'ta_link_terkait?q=' . urlencode($q);
             } else {
-                $config['base_url'] = base_url() . 'ta_link_terkait/index.html';
-                $config['first_url'] = base_url() . 'ta_link_terkait/index.html';
+                $config['base_url'] = base_url() . 'ta_link_terkait';
+                $config['first_url'] = base_url() . 'ta_link_terkait';
             }
 
             $config['per_page'] = 10;
             $config['page_query_string'] = TRUE;
             $config['total_rows'] = $this->Ta_link_terkait_model->total_rows($q);
-            $ta_link_terkait = $this->Ta_link_terkait_model->get_limit_data($config['per_page'], $start, $q);
+            $ta_link = $this->Ta_link_terkait_model->get_limit_data($config['per_page'], $start, $q);
 
             $this->load->library('pagination');
             $this->pagination->initialize($config);
 
             $data = array(
-                'ta_link_terkait_data' => $ta_link_terkait,
+                'ta_link_data' => $ta_link,
                 'q' => $q,
                 'pagination' => $this->pagination->create_links(),
                 'total_rows' => $config['total_rows'],
                 'start' => $start,
             );
             $this->template->load('backend/template','backend/ta_link_terkait/ta_link_terkait_list', $data);
-        }
-        else
-        {
-            header('location:'.base_url().'backend');
-        }
-    }
-
-    public function read($id) 
-    {
-        if ($this->session->userdata('logged_in')!="" && $this->session->userdata('stts')=="administrator")
-        {
-
-            $row = $this->Ta_link_terkait_model->get_by_id($id);
-            if ($row) {
-                $data = array(
-    		'id' => $row->id,
-    		'judul' => $row->judul,
-    		'hyperlink' => $row->hyperlink,
-    	    );
-                $this->template->load('backend/template','backend/ta_link_terkait/ta_link_terkait_read', $data);
-            } else {
-                $this->session->set_flashdata('message', 'Record Not Found');
-                redirect(site_url('ta_link_terkait'));
-            }
-        }
-        else
-        {
+        } else {
             header('location:'.base_url().'backend');
         }
     }
@@ -81,14 +56,14 @@ class Ta_link_terkait extends CI_Controller
             $data = array(
                 'button' => 'Simpan',
                 'action' => site_url('ta_link_terkait/create_action'),
-    	    'id' => set_value('id'),
-    	    'judul' => set_value('judul'),
-    	    'hyperlink' => set_value('hyperlink'),
-    	   );
+                'id_link' => set_value('id_link'),
+                'nama_link' => set_value('nama_link'),
+                'url' => set_value('url'),
+                'logo' => set_value('logo'),
+                'urutan' => set_value('urutan', '0'),
+            );
             $this->template->load('backend/template','backend/ta_link_terkait/ta_link_terkait_form', $data);
-        }
-        else
-        {
+        } else {
             header('location:'.base_url().'backend');
         }
     }
@@ -103,20 +78,42 @@ class Ta_link_terkait extends CI_Controller
                 $this->create();
             } else {
                 $data = array(
-    		'judul' => $this->input->post('judul',TRUE),
-    		'hyperlink' => $this->input->post('hyperlink',TRUE),
-    	    );
+                    'nama_link' => $this->input->post('nama_link',TRUE),
+                    'url' => $this->input->post('url',TRUE),
+                    'urutan' => $this->input->post('urutan',TRUE),
+                    'tgl_input' => date('Y-m-d H:i:s'),
+                );
 
-                $this->Ta_link_terkait_model->insert($data);
-                $this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    Berhasil Menambah Data.
-                </div>');
-                redirect(site_url('ta_link_terkait'));
+                if(!empty($_FILES['logo']['name'])) {
+                    $nm = str_replace(" ","_",$_FILES['logo']['name']);
+                    $n_baru = "Logo-".date('YmdHis')."-".$nm;
+                    
+                    // Folder upload: uploads/links/
+                    $config['upload_path']   = FCPATH . 'uploads/links/'; 
+                    $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                    $config['file_name']     = $n_baru;
+                    $config['max_size']      = '5000'; 
+             
+                    $this->upload->initialize($config);
+             
+                    if ($this->upload->do_upload("logo")) {
+                        $data_file = $this->upload->data();
+                        $data['logo'] = $data_file['file_name'];
+                        
+                        $this->Ta_link_terkait_model->insert($data);
+                        $this->session->set_flashdata('message', '<div class="alert alert-success">Simpan Data Berhasil</div>');
+                        redirect(site_url('ta_link_terkait'));
+                    } else {
+                        $this->session->set_flashdata('message', '<div class="alert alert-danger">Gagal Upload: '.$this->upload->display_errors().'</div>');
+                        $this->create();
+                    }
+                } else {
+                     // Boleh tanpa logo? Sebaiknya wajib untuk carousel
+                     $this->session->set_flashdata('message', '<div class="alert alert-warning">Logo wajib diupload</div>');
+                     $this->create();
+                }
             }
-        }
-        else
-        {
+        } else {
             header('location:'.base_url().'backend');
         }
     }
@@ -126,26 +123,22 @@ class Ta_link_terkait extends CI_Controller
         if ($this->session->userdata('logged_in')!="" && $this->session->userdata('stts')=="administrator")
         {
             $row = $this->Ta_link_terkait_model->get_by_id($id);
-
             if ($row) {
                 $data = array(
-                    'button' => 'Simpan',
+                    'button' => 'Ubah',
                     'action' => site_url('ta_link_terkait/update_action'),
-    		'id' => set_value('id', $row->id),
-    		'judul' => set_value('judul', $row->judul),
-    		'hyperlink' => set_value('hyperlink', $row->hyperlink),
-    	    );
+                    'id_link' => set_value('id_link', $row->id_link),
+                    'nama_link' => set_value('nama_link', $row->nama_link),
+                    'url' => set_value('url', $row->url),
+                    'logo' => set_value('logo', $row->logo),
+                    'urutan' => set_value('urutan', $row->urutan),
+                );
                 $this->template->load('backend/template','backend/ta_link_terkait/ta_link_terkait_form', $data);
             } else {
-                $this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    Data Tidak Ditemukan.
-                </div>');
+                $this->session->set_flashdata('message', 'Data tidak ditemukan');
                 redirect(site_url('ta_link_terkait'));
             }
-        }
-        else
-        {
+        } else {
             header('location:'.base_url().'backend');
         }
     }
@@ -157,23 +150,44 @@ class Ta_link_terkait extends CI_Controller
             $this->_rules();
 
             if ($this->form_validation->run() == FALSE) {
-                $this->update($this->input->post('id', TRUE));
+                $this->update($this->input->post('id_link', TRUE));
             } else {
+                $id = $this->input->post('id_link', TRUE);
                 $data = array(
-    		'judul' => $this->input->post('judul',TRUE),
-    		'hyperlink' => $this->input->post('hyperlink',TRUE),
-    	    );
+                    'nama_link' => $this->input->post('nama_link',TRUE),
+                    'url' => $this->input->post('url',TRUE),
+                    'urutan' => $this->input->post('urutan',TRUE),
+                );
 
-                $this->Ta_link_terkait_model->update($this->input->post('id', TRUE), $data);
-                $this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    Berhasil Mengupdate Data.
-                </div>');
+                if(!empty($_FILES['logo']['name']))
+                {
+                    $row = $this->Ta_link_terkait_model->get_by_id($id);
+                    // Hapus file lama
+                    if ($row->logo != "" && file_exists(FCPATH . 'uploads/links/' . $row->logo)) {
+                        @unlink(FCPATH . 'uploads/links/' . $row->logo);
+                    }
+
+                    $nm = str_replace(" ","_",$_FILES['logo']['name']);
+                    $n_baru = "Logo-".date('YmdHis')."-".$nm;
+                    
+                    $config['upload_path']   = FCPATH . 'uploads/links/';
+                    $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                    $config['file_name']     = $n_baru;
+                    $config['max_size']      = '5000';
+             
+                    $this->upload->initialize($config);
+             
+                    if ($this->upload->do_upload("logo")) {
+                        $data_file = $this->upload->data();
+                        $data['logo'] = $data_file['file_name'];
+                    }
+                }
+
+                $this->Ta_link_terkait_model->update($id, $data);
+                $this->session->set_flashdata('message', '<div class="alert alert-success">Update Berhasil</div>');
                 redirect(site_url('ta_link_terkait'));
             }
-        }
-        else
-        {
+        } else {
             header('location:'.base_url().'backend');
         }
     }
@@ -183,41 +197,28 @@ class Ta_link_terkait extends CI_Controller
         if ($this->session->userdata('logged_in')!="" && $this->session->userdata('stts')=="administrator")
         {
             $row = $this->Ta_link_terkait_model->get_by_id($id);
-
             if ($row) {
+                if ($row->logo != "" && file_exists(FCPATH . 'uploads/links/' . $row->logo)) {
+                    @unlink(FCPATH . 'uploads/links/' . $row->logo);
+                }
+                
                 $this->Ta_link_terkait_model->delete($id);
-                $this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        Berhasil Menghapus Data.
-                    </div>');
+                $this->session->set_flashdata('message', '<div class="alert alert-success">Hapus Berhasil</div>');
                 redirect(site_url('ta_link_terkait'));
             } else {
-                $this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        Tidak dapat dihapus karena Kategori digunakan pada Peraturan yang ada.
-                        </div>');
+                $this->session->set_flashdata('message', 'Data tidak ditemukan');
                 redirect(site_url('ta_link_terkait'));
             }
-        }
-        else
-        {
+        } else {
             header('location:'.base_url().'backend');
         }
     }
 
     public function _rules() 
     {
-    	$this->form_validation->set_rules('judul', 'judul', 'trim|required');
-    	$this->form_validation->set_rules('hyperlink', 'hyperlink', 'trim|required');
-
-    	$this->form_validation->set_rules('id', 'id', 'trim');
-    	$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
+        $this->form_validation->set_rules('nama_link', 'nama link', 'trim|required');
+        $this->form_validation->set_rules('url', 'url', 'trim|required');
+        $this->form_validation->set_rules('id_link', 'id_link', 'trim');
+        $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
     }
-
 }
-
-/* End of file Ta_link_terkait.php */
-/* Location: ./application/controllers/Ta_link_terkait.php */
-/* Please DO NOT modify this information : */
-/* Generated by Harviacode Codeigniter CRUD Generator 2018-09-22 16:28:34 */
-/* http://harviacode.com */

@@ -8,7 +8,7 @@ class Ta_slider_model extends CI_Model
 
     public $table = 'ta_slider';
     public $id = 'id_slider';
-    public $order = 'ASC';
+    public $order = 'DESC';
 
     function __construct()
     {
@@ -18,8 +18,7 @@ class Ta_slider_model extends CI_Model
     // get all
     function get_all()
     {
-        $this->db->order_by('urutan', 'ASC');
-        $this->db->order_by($this->id, 'DESC');
+        $this->db->order_by($this->id, $this->order);
         return $this->db->get($this->table)->result();
     }
 
@@ -33,20 +32,20 @@ class Ta_slider_model extends CI_Model
     // get total rows
     function total_rows($q = NULL) {
         $this->db->like('id_slider', $q);
-        $this->db->or_like('judul', $q);
-        $this->db->or_like('sub_judul', $q);
-        $this->db->from($this->table);
+	    $this->db->or_like('judul', $q);
+	    $this->db->or_like('sub_judul', $q);
+	    $this->db->from($this->table);
         return $this->db->count_all_results();
     }
 
     // get data with limit and search
     function get_limit_data($limit, $start = 0, $q = NULL) {
         $this->db->order_by('urutan', 'ASC');
-        $this->db->order_by($this->id, 'DESC');
+        $this->db->order_by($this->id, $this->order);
         $this->db->like('id_slider', $q);
-        $this->db->or_like('judul', $q);
-        $this->db->or_like('sub_judul', $q);
-        $this->db->limit($limit, $start);
+	    $this->db->or_like('judul', $q);
+	    $this->db->or_like('sub_judul', $q);
+	    $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }
 

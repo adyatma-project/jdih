@@ -10,6 +10,7 @@ class Ta_slider extends CI_Controller
         parent::__construct();
         $this->load->model('Ta_slider_model');
         $this->load->library('form_validation');
+        $this->load->library('upload'); // Load library upload di construct
     }
 
     public function index()
@@ -104,36 +105,53 @@ class Ta_slider extends CI_Controller
         if ($this->session->userdata('logged_in')!="" && $this->session->userdata('stts')=="administrator")
         {
             $this->_rules();
+
             if ($this->form_validation->run() == FALSE) {
                 $this->create();
             } else {
-                $data['judul'] = $this->input->post('judul',TRUE);
-                $data['sub_judul'] = $this->input->post('sub_judul',TRUE);
-                $data['urutan'] = $this->input->post('urutan',TRUE);
-                $data['status'] = $this->input->post('status',TRUE);
-                $data['tgl_input'] = date("Y-m-d H:i:s");
+                // Siapkan data teks
+                $data = array(
+                    'judul' => $this->input->post('judul',TRUE),
+                    'sub_judul' => $this->input->post('sub_judul',TRUE),
+                    'urutan' => $this->input->post('urutan',TRUE),
+                    'status' => $this->input->post('status',TRUE),
+                    'tgl_input' => date("Y-m-d H:i:s")
+                );
 
-                if(!empty($_FILES['foto']['name']))
-                {
+                // Cek apakah ada file foto yang diupload
+                if(!empty($_FILES['foto']['name'])) {
+                    // Konfigurasi Upload
                     $nm = str_replace(" ","_",$_FILES['foto']['name']);
-                    $n_baru = date('YmdHis')."_".$nm;
+                    $n_baru = "Slider-".date('YmdHis')."-".$nm;
                     
-                    $config['upload_path']   = "./uploads/slider/";
+                    // Gunakan FCPATH agar path absolut dan aman (Fix Error Writable)
+                    $config['upload_path']   = FCPATH . 'uploads/slider/'; 
                     $config['allowed_types'] = 'gif|jpg|png|jpeg';
                     $config['file_name']     = $n_baru;
                     $config['max_size']      = '5000'; // 5MB
-             
-                    $this->load->library('upload', $config);
+                    
+                    // Reset dan inisialisasi library upload
+                    $this->upload->initialize($config);
              
                     if ($this->upload->do_upload("foto")) {
                         $data_file = $this->upload->data();
                         $data['foto'] = $data_file['file_name'];
+                        
+                        // Insert ke database jika upload sukses
+                        $this->Ta_slider_model->insert($data);
+                        $this->session->set_flashdata('message', '<div class="alert alert-success">Berhasil Menambah Slider.</div>');
+                        redirect(site_url('ta_slider'));
+                    } else {
+                        // Jika Upload Gagal, tampilkan pesan errornya
+                        $error = $this->upload->display_errors();
+                        $this->session->set_flashdata('message', '<div class="alert alert-danger">Gagal Upload: '.$error.'</div>');
+                        $this->create();
                     }
+                } else {
+                    // Jika tidak ada foto
+                    $this->session->set_flashdata('message', '<div class="alert alert-warning">Foto wajib diupload.</div>');
+                    $this->create();
                 }
-
-                $this->Ta_slider_model->insert($data);
-                $this->session->set_flashdata('message', '<div class="alert alert-success">Berhasil Menambah Data Slider</div>');
-                redirect(site_url('ta_slider'));
             }
         }
         else
@@ -175,42 +193,58 @@ class Ta_slider extends CI_Controller
         if ($this->session->userdata('logged_in')!="" && $this->session->userdata('stts')=="administrator")
         {
             $this->_rules();
+
             if ($this->form_validation->run() == FALSE) {
                 $this->update($this->input->post('id_slider', TRUE));
             } else {
-                $data['judul'] = $this->input->post('judul',TRUE);
-                $data['sub_judul'] = $this->input->post('sub_judul',TRUE);
-                $data['urutan'] = $this->input->post('urutan',TRUE);
-                $data['status'] = $this->input->post('status',TRUE);
+                $id = $this->input->post('id_slider', TRUE);
+                $data = array(
+                    'judul' => $this->input->post('judul',TRUE),
+                    'sub_judul' => $this->input->post('sub_judul',TRUE),
+                    'urutan' => $this->input->post('urutan',TRUE),
+                    'status' => $this->input->post('status',TRUE)
+                );
 
-                // Cek jika ada upload foto baru
+                // Cek jika ada foto baru
                 if(!empty($_FILES['foto']['name']))
                 {
-                    $row = $this->Ta_slider_model->get_by_id($this->input->post('id_slider'));
-                    // Hapus foto lama
-                    if ($row->foto != "" && file_exists('./uploads/slider/' . $row->foto)) {
-                        unlink('./uploads/slider/' . $row->foto);
-                    }
-
-                    $nm = str_replace(" ","_",$_FILES['foto']['name']);
-                    $n_baru = date('YmdHis')."_".$nm;
+                    $row = $this->Ta_slider_model->get_by_id($id);
                     
-                    $config['upload_path']   = "./uploads/slider/";
+                    // Konfigurasi Upload
+                    $nm = str_replace(" ","_",$_FILES['foto']['name']);
+                    $n_baru = "Slider-".date('YmdHis')."-".$nm;
+                    
+                    $config['upload_path']   = FCPATH . 'uploads/slider/';
                     $config['allowed_types'] = 'gif|jpg|png|jpeg';
                     $config['file_name']     = $n_baru;
                     $config['max_size']      = '5000';
              
-                    $this->load->library('upload', $config);
+                    $this->upload->initialize($config);
              
                     if ($this->upload->do_upload("foto")) {
+                        // Hapus foto lama jika upload sukses
+                        if ($row->foto != "" && file_exists(FCPATH . 'uploads/slider/' . $row->foto)) {
+                            @unlink(FCPATH . 'uploads/slider/' . $row->foto);
+                        }
+
                         $data_file = $this->upload->data();
                         $data['foto'] = $data_file['file_name'];
+                        
+                        // Lanjut update database
+                        $this->Ta_slider_model->update($id, $data);
+                        $this->session->set_flashdata('message', '<div class="alert alert-success">Update Data Berhasil.</div>');
+                        redirect(site_url('ta_slider'));
+                    } else {
+                        $error = $this->upload->display_errors();
+                        $this->session->set_flashdata('message', '<div class="alert alert-danger">Gagal Upload: '.$error.'</div>');
+                        $this->update($id);
                     }
+                } else {
+                    // Update data tanpa ganti foto
+                    $this->Ta_slider_model->update($id, $data);
+                    $this->session->set_flashdata('message', '<div class="alert alert-success">Update Data Berhasil.</div>');
+                    redirect(site_url('ta_slider'));
                 }
-
-                $this->Ta_slider_model->update($this->input->post('id_slider', TRUE), $data);
-                $this->session->set_flashdata('message', '<div class="alert alert-success">Update Record Success</div>');
-                redirect(site_url('ta_slider'));
             }
         }
         else
@@ -225,13 +259,13 @@ class Ta_slider extends CI_Controller
         {
             $row = $this->Ta_slider_model->get_by_id($id);
             if ($row) {
-                // Hapus file fisik
-                if ($row->foto != "" && file_exists('./uploads/slider/' . $row->foto)) {
-                    unlink('./uploads/slider/' . $row->foto);
+                // Hapus foto fisik menggunakan FCPATH
+                if ($row->foto != "" && file_exists(FCPATH . 'uploads/slider/' . $row->foto)) {
+                    @unlink(FCPATH . 'uploads/slider/' . $row->foto);
                 }
                 
                 $this->Ta_slider_model->delete($id);
-                $this->session->set_flashdata('message', '<div class="alert alert-success">Delete Record Success</div>');
+                $this->session->set_flashdata('message', '<div class="alert alert-success">Hapus Data Berhasil.</div>');
                 redirect(site_url('ta_slider'));
             } else {
                 $this->session->set_flashdata('message', 'Record Not Found');
