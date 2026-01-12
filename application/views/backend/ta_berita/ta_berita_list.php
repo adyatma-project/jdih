@@ -65,7 +65,7 @@
                 <th>No</th>
                 <th>Foto</th>
 		<th><i class="fa fa-info"></i> Judul</th>
-		<th width="30%"><i class="fa fa-newspaper-o"></i> Isi</th>
+		
 		<th ><i class="fa fa-archive"></i> Kategori</th>
 		<th width="10%"><i class="fa fa-calendar"></i> Input</th> 
 		<th width="10%"><i class="fa fa-calendar"></i> Update</th> 
@@ -78,9 +78,32 @@
                 ?>
                 <tr>
 			<td width="30"><?php echo ++$start ?></td>
-            <td><img src="<?php echo base_url()."uploads/berita/thumb/".$ta_berita->file ?>"></img></td>
+           <td>
+    <?php 
+        // Cek apakah file ada isinya
+        if (!empty($ta_berita->file)) {
+            // Cek apakah gambar ada di folder berita_konten (upload otomatis TinyMCE)
+            $path_tinymce = 'uploads/berita_konten/' . $ta_berita->file;
+            // Cek apakah gambar ada di folder berita (upload manual lama)
+            $path_manual = 'uploads/berita/' . $ta_berita->file;
+
+            if (file_exists($path_tinymce)) {
+                $img_url = base_url($path_tinymce);
+            } elseif (file_exists($path_manual)) {
+                $img_url = base_url($path_manual);
+            } else {
+                $img_url = base_url('uploads/no-image.png'); // Gambar default jika file hilang
+            }
+    ?>
+        <img src="<?php echo $img_url; ?>" width="80px" style="border-radius: 4px; border:1px solid #ddd;">
+    <?php 
+        } else { 
+            echo '<span class="label label-default">No Image</span>'; 
+        } 
+    ?>
+</td>
 			<td><a href="<?php echo base_url()?>ta_berita/read/<?php echo $ta_berita->id_berita ?>"> <?php echo $ta_berita->judul ?></a></td>
-			<td><?php echo $ta_berita->isi ?></td>
+			
 			<td><?php echo $ta_berita->kategori ?></td>
 			<td><?php echo $ta_berita->tgl_insert ?></td>
 			<td><?php echo $ta_berita->tgl_update ?></td>
@@ -90,7 +113,7 @@
 			<td style="text-align:center">
 				<?php 
 				
-				echo anchor(site_url('ta_berita/read/'.$ta_berita->id_berita),'<i class="fa fa-sticky-note-o"></i>', 'class="btn btn-sm btn-success"'); 
+				echo anchor(site_url('berita/detail/'.$ta_berita->id_berita), '<i class="fa fa-sticky-note-o"></i>', 'class="btn btn-sm btn-success" target="_blank" title="Lihat Tampilan Website"');
 				echo anchor(site_url('ta_berita/update/'.$ta_berita->id_berita),'<i class="fa fa-pencil-square-o"></i>', 'class="btn btn-sm btn-info"'); 
 				echo anchor(site_url('ta_berita/delete/'.$ta_berita->id_berita),'<i class="fa fa-trash-o"></i>','class="btn btn-sm btn-danger" onclick="javasciprt: return confirm(\'Yakin Ingin Hapus ?\')"');
 				?>

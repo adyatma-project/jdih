@@ -665,41 +665,55 @@
                 </div>
             </div>
 
-            <div class="mb-5">
+          <div class="mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <span class="section-label" style="color: var(--primary);">Informasi</span>
-                        <h3 class="fw-bold mb-0">Kabar Berita</h3>
+                        <h3 class="fw-bold mb-0" style="font-weight: 800; color:var(--text-main);">Kabar Berita</h3>
                     </div>
-                    <a href="<?php echo base_url('frontendberita/berita_list') ?>" class="btn btn-outline-dark rounded-pill px-4 fw-bold">Arsip Berita</a>
+                    <a href="<?php echo base_url('berita') ?>" class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold">Arsip Berita</a>
                 </div>
 
-                <div class="row g-4">
-                    <?php foreach($ta_berita as $value) { ?>
-                        <div class="col-md-6">
+                <div class="row">
+                    <?php if(!empty($ta_berita)): foreach($ta_berita as $value) { 
+                        // LOGIKA GAMBAR (Smart Auto-Check)
+                        $img_src = '';
+                        if(!empty($value->file)) {
+                            if(file_exists(FCPATH . 'uploads/berita_konten/' . $value->file)){
+                                $img_src = base_url('uploads/berita_konten/' . $value->file);
+                            } elseif(file_exists(FCPATH . 'uploads/berita/' . $value->file)){
+                                $img_src = base_url('uploads/berita/' . $value->file);
+                            }
+                        }
+                    ?>
+                        <div class="col-md-6 mb-4">
                             <div class="news-card-modern">
                                 <div class="news-img-container">
-                                    <?php if(!empty($value->file)): ?>
-                                        <img src="<?php echo base_url('uploads/berita/medium/'.$value->file) ?>" alt="Berita">
+                                    <?php if($img_src): ?>
+                                        <img src="<?php echo $img_src; ?>" alt="Berita">
                                     <?php else: ?>
                                         <div class="d-flex align-items-center justify-content-center bg-light w-100 h-100 text-muted">
-                                            <i class="bi bi-image fs-1"></i>
+                                            <i class="fa fa-image fa-3x"></i>
                                         </div>
                                     <?php endif; ?>
+                                    
                                     <div class="news-date-badge">
+                                        <i class="fa fa-calendar-o"></i> 
                                         <?php echo date('d M Y', strtotime($value->tgl_insert)); ?>
                                     </div>
                                 </div>
-                                <div class="p-4">
+                                <div class="p-4 d-flex flex-column flex-grow-1">
                                     <h5 class="fw-bold mb-2 lh-base" style="font-size: 1.1rem;">
-                                        <a href="#" class="text-decoration-none text-dark stretched-link">
+                                        <a href="<?php echo base_url('berita/detail/'.$value->id_berita); ?>" class="text-decoration-none text-dark stretched-link">
                                             <?php echo substr($value->judul, 0, 60) . '...'; ?>
                                         </a>
                                     </h5>
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php } else: ?>
+                        <div class="col-12"><div class="alert alert-info">Belum ada berita terbaru.</div></div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -707,7 +721,7 @@
         <div class="col-lg-4">
             
             <div class="widget-island">
-                <h6 class="text-uppercase text-muted fw-bold mb-4 ls-1" style="font-size: 0.75rem;">
+                <h6 class="text-uppercase text-muted fw-bold mb-4 ls-1">
                     <?php echo isset($kabag->jabatan) ? $kabag->jabatan : 'Kepala Bagian Hukum'; ?>
                 </h6>
                 
@@ -719,13 +733,13 @@
                     <?php endif; ?>
                 </div>
                 
-                <h5 class="fw-bold text-dark mb-1">
+                <h4 class="fw-bold text-dark mb-1">
                     <?php echo isset($kabag->nama) ? $kabag->nama : '-'; ?>
-                </h5>
+                </h4>
                 <p class="text-muted small mb-4">
                     <?php echo isset($kabag->nip) && !empty($kabag->nip) ? 'NIP. '.$kabag->nip : 'Sekretariat Daerah Kab. Donggala'; ?>
                 </p>
-                <a href="#" class="btn btn-profile w-100">Lihat Profil Lengkap</a>
+               
             </div>
 
             <div class="widget-island p-4 text-start border-0" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color:white;">
@@ -744,7 +758,7 @@
                 <div class="p-3 bg-white text-start border-bottom">
                     <small class="fw-bold d-block text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Lokasi Kantor</small>
                 </div>
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127649.3236750035!2d119.7347185!3d-0.6695286!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2d8bedd3e300c01f%3A0x3030bfbcaf77380!2sKabupaten%20Donggala%2C%20Sulawesi%20Tengah!5e0!3m2!1sid!2sid!4v1647833000000!5m2!1sid!2sid" style="border:0; width: 100%; height: 280px;" allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.5384300858527!2d119.74998847496477!3d-0.6786681993147113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2d8bb84fdde0d2cb%3A0xbc10bdf2c28577c3!2sDonggala%20Regent%20Office!5e0!3m2!1sen!2sid!4v1768146808224!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
 
         </div>

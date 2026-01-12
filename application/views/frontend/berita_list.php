@@ -6,7 +6,11 @@
                 <div class="card mb-3">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img src="<?php echo base_url(); ?>/uploads/berita/medium/<?= $value->file ?>" class="img-fluid rounded-start" alt="...">
+                           <?php if (!empty($ta_berita->file)): ?>
+        <img src="<?php echo base_url('uploads/berita/' . $ta_berita->file); ?>" width="100px" style="border:1px solid #ccc; padding:2px;">
+    <?php else: ?>
+        <span class="label label-default">Tidak ada gambar</span>
+    <?php endif; ?>
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">

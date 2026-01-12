@@ -167,31 +167,7 @@
 			}
 
 
-			// Batas menampilkan data yang di ubah
-
-			// if($ta_produk_hukum->id_status_peraturan=="0"||$ta_produk_hukum->id_status_peraturan==NULL )
-			// 	{
-			// 		echo "Berlaku";
-			// 	}
-			// 	else
-			// 	{
-			// 		echo "<b>".$ta_produk_hukum->nama_status_peraturan.": </b>";
-			// 		if (!$ta_produk_hukum->id_sumber_perubahan==NULL)
-			// 		{
-			// 			$sumber = $this->db->query('SELECT ta_produk_hukum.tahun, ta_produk_hukum.id_produk_hukum, ta_produk_hukum.no_peraturan, ref_kategori.kategori FROM ta_produk_hukum
-			// 		left join ref_kategori
-			// 		on ta_produk_hukum.id_kategori=ref_kategori.id_kategori
-			// 		WHERE id_produk_hukum='.$ta_produk_hukum->id_sumber_perubahan.'
-			// 		')->row();
-			// 			if ($sumber)
-			// 			{
-			// 					echo "<br><p>";
-			// 					echo "<a href=".base_url()."ta_produk_hukum/read/".$sumber->id_produk_hukum.">";
-			// 					echo $sumber->kategori; echo " Nomor ";  echo $sumber->no_peraturan; echo " Tahun "; echo $sumber->tahun;
-			// 					echo "</p></a>";
-			// 			}
-			// 		}
-			// 	}
+			
 					
 					
 			?>
@@ -202,7 +178,7 @@
 			<td><?php echo $ta_produk_hukum->didownload ?></td>
 			<td style="text-align:center">
 				<?php 
-				echo anchor(site_url('ta_produk_hukum/read/'.$ta_produk_hukum->id_produk_hukum),'<i class="fa fa-file-pdf-o"></i>', 'class="btn btn-sm btn-warning"');
+				// echo anchor(site_url('ta_produk_hukum/read/'.$ta_produk_hukum->id_produk_hukum),'<i class="fa fa-file-pdf-o"></i>', 'class="btn btn-sm btn-warning"');
 				
 				echo anchor(site_url('ta_produk_hukum/update/'.$ta_produk_hukum->id_produk_hukum),'<i class="fa fa-pencil-square-o"></i>', 'class="btn btn-sm btn-info"'); 
 				

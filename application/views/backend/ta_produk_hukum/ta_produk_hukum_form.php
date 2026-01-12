@@ -1,352 +1,274 @@
 <section class="content-header">
-	<h1>
-		Tambah/Ubah Data
-		<small>Produk Hukum</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-		<li class="active">Here</li>
-	</ol>
+    <h1>Form Metadata Produk Hukum (Standar JDIHN)</h1>
 </section>
 
-<!-- Main content -->
-<section class="content container-fluid">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Input Data Dokumen</h3>
+        </div>
+        
+        <?php echo form_open_multipart($action); ?>
+        <div class="box-body">
+            
+            <div class="form-group bg-gray p-3" style="padding: 15px; border-radius: 5px;">
+                <label style="font-size: 16px;">Jenis Dokumen / Kategori <span class="text-danger">*</span></label>
+                <select name="id_kategori" id="id_kategori" class="form-control input-lg" required>
+                    <option value="">-- Pilih Jenis Dokumen --</option>
+                    <?php foreach ($ref_kategori as $kat) { ?>
+                        <option value="<?php echo $kat->id_kategori ?>" data-nama="<?php echo strtolower($kat->kategori); ?>" <?php echo ($id_kategori == $kat->id_kategori) ? 'selected' : ''; ?>>
+                            <?php echo $kat->kategori ?>
+                        </option>
+                    <?php } ?>
+                </select>
+                <small class="text-muted">Metadata di bawah akan berubah sesuai kategori yang dipilih.</small>
+            </div>
 
-	<div class="box">
-		<div class="box-header with-border">
-			<h3 class="box-title">Produk Hukum</h3>
-		</div>
-		<div class="box-body">
-			<div class="col-md-6">
-				<?php echo form_open_multipart($action); ?>
+            <div id="meta_peraturan" class="meta-group" style="display:none;">
+                <h4 class="text-primary"><i class="fa fa-gavel"></i> Metadata Peraturan</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Jenis Peraturan</label>
+                            <input type="text" class="form-control" disabled value="Sesuai Kategori Diatas">
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Peraturan <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="no_peraturan" value="<?php echo $no_peraturan; ?>" placeholder="Contoh: 15">
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="tahun" value="<?php echo $tahun; ?>" placeholder="Contoh: 2024">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Judul Peraturan (Tentang) <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="tentang" rows="3" placeholder="Nama lengkap peraturan..."><?php echo $tentang; ?></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Tempat Penetapan</label>
+                            <input type="text" class="form-control" name="tempat_penetapan" value="<?php echo $tempat_penetapan; ?>" placeholder="Contoh: Donggala">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Tanggal Penetapan</label>
+                            <input type="date" class="form-control" name="tgl_penetapan" value="<?php echo $tgl_penetapan; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Tanggal Pengundangan</label>
+                            <input type="date" class="form-control" name="tgl_pengundangan" value="<?php echo $tgl_pengundangan; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                         <div class="form-group">
+                            <label>Tanggal Diupload</label>
+                            <input type="date" class="form-control" name="tgl_peraturan" value="<?php echo $tgl_peraturan; ?>">
+                        </div>
+                    </div>
+                </div>
 
-				<div class="form-group">
-					<label for="varchar">Judul Peraturan <?php echo form_error('judul_peraturan') ?></label>
-					<input type="text" class="form-control" name="judul_peraturan" id="judul_peraturan" placeholder="Judul Peraturan" value="<?php echo $judul_peraturan; ?>" />
-				</div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sumber (LN)</label>
+                            <input type="text" class="form-control" name="sumber_ln" value="<?php echo $sumber_ln; ?>" placeholder="Lembaran Negara">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sumber (TLN)</label>
+                            <input type="text" class="form-control" name="sumber_tln" value="<?php echo $sumber_tln; ?>" placeholder="Tambahan LN">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sumber (BN)</label>
+                            <input type="text" class="form-control" name="sumber_bn" value="<?php echo $sumber_bn; ?>" placeholder="Berita Negara">
+                        </div>
+                    </div>
+                </div>
 
-				<div class="form-group row">
-					<div class="col-xs-8">
-						<label for="int">Jenis <?php echo form_error('id_kategori') ?></label>
-						<select class="form-control" name="id_kategori" id="id_kategori">
-							<option value="">- Pilih Jenis -</option>
-							<?php
-							foreach ($kategori as $value) {
-								if ($id_kategori == $value->id_kategori) {
-									$selected = "selected";
-								} else {
-									$selected = "";
-								}
-							?>
-								<option value="<?php echo $value->id_kategori ?>" <?php echo $selected ?>><?php echo $value->kategori ?></option>
-							<?php
-							}
-							?>
-						</select>
-					</div>
-				</div>
+                <div class="form-group">
+                    <label>Subjek / Kata Kunci</label>
+                    <input type="text" class="form-control" name="subjek" value="<?php echo $subjek; ?>" placeholder="Contoh: Pajak, Retribusi, Pendidikan">
+                </div>
+            </div>
 
-				<div class="form-group row">
-					<div class="col-xs-6">
-						<label for="varchar">No. Peraturan <?php echo form_error('no_peraturan') ?></label>
-						<input type="text" class="form-control" name="no_peraturan" id="no_peraturan" placeholder="No Peraturan" value="<?php echo $no_peraturan; ?>" />
-					</div>
-				</div>
+            <div id="meta_putusan" class="meta-group" style="display:none;">
+                <h4 class="text-primary"><i class="fa fa-balance-scale"></i> Metadata Putusan Pengadilan</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label>Nomor Putusan</label>
+                            <input type="text" class="form-control" name="nomor_putusan" value="<?php echo $nomor_putusan; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Peradilan</label>
+                            <select name="jenis_peradilan" class="form-control">
+                                <option value="">- Pilih -</option>
+                                <option value="Peradilan Umum" <?php echo ($jenis_peradilan=='Peradilan Umum')?'selected':''; ?>>Peradilan Umum</option>
+                                <option value="Peradilan Agama" <?php echo ($jenis_peradilan=='Peradilan Agama')?'selected':''; ?>>Peradilan Agama</option>
+                                <option value="Peradilan TUN" <?php echo ($jenis_peradilan=='Peradilan TUN')?'selected':''; ?>>Peradilan TUN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Lembaga Peradilan</label>
+                            <input type="text" class="form-control" name="lembaga_peradilan" value="<?php echo $lembaga_peradilan; ?>" placeholder="Contoh: Pengadilan Negeri Donggala">
+                        </div>
+                         <div class="form-group">
+                            <label>Tanggal Putusan</label>
+                            <input type="date" class="form-control" name="tgl_putusan" value="<?php echo $tgl_putusan; ?>">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Amar Putusan</label>
+                    <textarea class="form-control" name="amar_putusan" rows="3" placeholder="Ringkasan Putusan..."><?php echo $amar_putusan; ?></textarea>
+                </div>
+            </div>
 
-				<div class="form-group row">
-					<div class="col-xs-3">
-						<label for="int">Tahun <?php echo form_error('tahun') ?></label>
-						<input type="text" class="form-control" name="tahun" id="tahun" placeholder="Tahun" value="<?php echo $tahun; ?>" />
-					</div>
-				</div>
+            <div id="meta_monografi" class="meta-group" style="display:none;">
+                <h4 class="text-primary"><i class="fa fa-book"></i> Metadata Monografi/Buku</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Judul Buku</label>
+                            <input type="text" class="form-control" name="judul_buku" value="<?php echo $tentang; ?>" placeholder="Diisi di field 'Tentang' sebagai Judul">
+                        </div>
+                        <div class="form-group">
+                            <label>Penulis / Pengarang</label>
+                            <input type="text" class="form-control" name="penulis" value="<?php echo $penulis; ?>">
+                        </div>
+                         <div class="form-group">
+                            <label>Penerbit</label>
+                            <input type="text" class="form-control" name="penerbit" value="<?php echo $penerbit; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>ISBN</label>
+                            <input type="text" class="form-control" name="isbn" value="<?php echo $isbn; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun Terbit</label>
+                            <input type="number" class="form-control" name="tahun_terbit" value="<?php echo $tahun; ?>" placeholder="Diisi di field Tahun">
+                        </div>
+                         <div class="form-group">
+                            <label>Klasifikasi</label>
+                            <input type="text" class="form-control" name="klasifikasi" value="<?php echo $klasifikasi; ?>">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-				<div class="form-group">
-					<label for="varchar">Tentang <?php echo form_error('tentang') ?></label>
-					<input type="text" class="form-control" name="tentang" id="tentang" placeholder="Tentang" value="<?php echo $tentang; ?>" />
-				</div>
+            <div id="meta_artikel" class="meta-group" style="display:none;">
+                <h4 class="text-primary"><i class="fa fa-newspaper-o"></i> Metadata Artikel Hukum</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Judul Artikel</label>
+                            <input type="text" class="form-control" name="judul_artikel" value="<?php echo $tentang; ?>" placeholder="Diisi di field 'Tentang'">
+                        </div>
+                         <div class="form-group">
+                            <label>Penulis</label>
+                            <input type="text" class="form-control" name="penulis_artikel" value="<?php echo $penulis; ?>" placeholder="Nama Penulis">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nama Jurnal / Majalah</label>
+                            <input type="text" class="form-control" name="nama_jurnal" value="<?php echo $nama_jurnal; ?>">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Volume / Nomor</label>
+                                    <input type="text" class="form-control" name="volume" value="<?php echo $volume; ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Halaman</label>
+                                    <input type="text" class="form-control" name="halaman" value="<?php echo $halaman; ?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-				<div class="form-group">
-					<label for="abstrak">Abstrak <?php echo form_error('abstrak') ?></label>
-					<textarea class="form-control" rows="3" name="abstrak" id="abstrak" placeholder="Abstrak"><?php echo $abstrak; ?></textarea>
-				</div>
+            <hr>
 
+            <div class="form-group">
+                <label>Upload File Dokumen (PDF) <span class="text-danger">*</span></label>
+                <input type="file" name="file" class="form-control">
+                <?php if($file){ ?>
+                    <p class="help-block">File saat ini: <a href="<?php echo base_url('uploads/produk_hukum/'.$file) ?>" target="_blank"><?php echo $file; ?></a></p>
+                <?php } ?>
+            </div>
 
+             <div class="form-group">
+                <label>Status Publikasi</label>
+                <select name="status" class="form-control">
+                    <option value="1" <?php echo ($status=='1') ? 'selected' : ''; ?>>Publish (Tampil)</option>
+                    <option value="0" <?php echo ($status=='0') ? 'selected' : ''; ?>>Draft (Sembunyikan)</option>
+                </select>
+            </div>
 
+            <input type="hidden" name="id_produk_hukum" value="<?php echo $id_produk_hukum; ?>" /> 
+        </div>
 
-			</div>
-			<div class="col-md-6">
-				<div class="form-group row">
-					<div class="col-xs-4">
-						<label for="int">Status Peraturan <?php echo form_error('id_status_peraturan') ?></label>
-						<select class="form-control" name="id_status_peraturan" id="id_status_peraturan" <?php echo $disabled ?>>
-
-							<option value="0">Baru</option>
-							<?php
-							foreach ($status_peraturan as $value) {
-								if ($id_status_peraturan == $value->id_status_peraturan) {
-									$selected = "selected";
-								} else {
-									$selected = "";
-								}
-							?>
-								<option value="<?php echo $value->id_status_peraturan ?>" <?php echo $selected ?>><?php echo $value->nama_status_peraturan ?></option>
-							<?php
-							}
-							?>
-						</select>
-					</div>
-
-				</div>
-				<?php if ($id_status_peraturan == "0" || $id_status_peraturan == "2" || $id_status_peraturan == "4" || $id_status_peraturan == "6" || $id_status_peraturan == NULL) {
-				?>
-
-				<?php
-				} else {
-				?>
-
-					<span id="myP">
-						<div class="form-group">
-							<label for="int">Subject/Keterangan Status <?php echo form_error('id_sumber_perubahan') ?></label> *)
-							<em>Pilih Sumber Subject/Keterangan Status</em> <br>
-							<div class="col-xs-11">
-
-								<select class="form-control select2" name="id_sumber_perubahan" id="id_sumber_perubahan">
-									<option value="">- Pilih Produk Hukum</option>
-									<?php foreach ($list_produk_hukum as $value) {
-										if ($id_sumber_perubahan == $value->id_produk_hukum) {
-											$selected = "selected";
-										} else {
-											$selected = "";
-										}
-									?>
-										<option value="<?php echo $value->id_produk_hukum ?>" <?php echo $selected ?>><?php echo "Nomor " . $value->no_peraturan . " Tahun " . $value->tahun . " Tentang " . $value->tentang; ?></option>
-									<?php
-									}
-									?>
-								</select>
-
-							</div>
-							<div class="col-xs-1">
-								<span class="btn btn-success" id="tambah_status">+</span>
-							</div>
-							<br>
-							<br>
-							<table class="table table-responsive table-bordered">
-								<thead>
-									<tr>
-										<th></th>
-										<th>Peraturan</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody id="isi-subject"></tbody>
-							</table>
-							<span id="isi-subject1"></span>
-							<input type="hidden" name="subject_produk" id="subject_produk"></input>
-							<input type="hidden" name="subject_status" id="subject_status"></input>
-						</div>
-					</span>
-				<?php
-				}
-				?>
-
-
-				<div class="form-group">
-					<label for="int">Keterangan Lainnya <?php echo form_error('keterangan_lainnya') ?></label>
-					<input type="text" class="form-control" name="keterangan_lainnya" id="keterangan_lainnya" placeholder="keterangan Lainnya" value="<?php echo $keterangan_lainnya; ?>" />
-				</div>
-
-				<div class="form-group row">
-					<div class="col-xs-6">
-						<label for="date">Tangggal Peraturan <?php echo form_error('tgl_peraturan') ?></label>
-						<div class="input-group date">
-							<div class="input-group-addon">
-								<i class="fa fa-calendar"></i>
-							</div>
-							<input type="text" class="form-control pull-right" name="tgl_peraturan" id="tgl_peraturan" placeholder="Tgl Peraturan" value="<?php echo $tgl_peraturan; ?>" />
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group row">
-					<div class="col-xs-8">
-						<label for="int">Pengarang <?php echo form_error('id_pengarang') ?></label>
-						<select class="form-control" name="id_pengarang" id="id_pengarang">
-							<option value="">- Pilih Jenis -</option>
-							<?php
-							foreach ($pengarang as $value) {
-								if ($id_pengarang == $value->id_pengarang) {
-									$selected = "selected";
-								} else {
-									$selected = "";
-								}
-							?>
-								<option value="<?php echo $value->id_pengarang ?>" <?php echo $selected ?>><?php echo $value->pengarang ?></option>
-							<?php
-							}
-							?>
-						</select>
-					</div>
-				</div>
-
-				<!-- <div class="form-group">
-				<label for="int">Uji Material <?php echo form_error('pengarang') ?></label>
-				<input type="text" class="form-control" name="pengarang" id="pengarang" placeholder="Uji Material" value="<?php echo $pengarang; ?>" />
-			</div> -->
-				<div class="form-group">
-					<label for="int">Tempat Terbit <?php echo form_error('tempat_terbit') ?></label>
-					<input type="text" class="form-control" name="tempat_terbit" id="tempat_terbit" placeholder="Tempat Terbit" value="<?php echo $tempat_terbit; ?>" />
-				</div>
-
-				<div class="form-group">
-					<label for="int">Pemrakarsa <?php echo form_error('pemrakarsa') ?></label>
-					<input type="text" class="form-control" name="pemrakarsa" id="pemrakarsa" placeholder="Pemrakarsa" value="<?php echo $pemrakarsa; ?>" />
-				</div>
-				<div class="form-group">
-					<label for="int">Nomor Register<?php echo form_error('no_register') ?></label>
-					<input type="text" class="form-control" name="no_register" id="no_register" placeholder="Nomor Register" value="<?php echo $no_register; ?>" />
-				</div>
-
-
-
-				<div class="form-group row">
-					<div class="col-xs-12">
-						<label for="varchar">File Peraturan (.pdf) : <?php echo $file; ?><?php echo form_error('imgName') ?></label>
-						<input type="file" name="imgName">
-						<input class="file-path validate" type="hidden" name="imgName">
-					</div>
-				</div>
-
-				<div class="form-group row">
-					<div class="col-xs-12">
-						<label for="varchar">File Lampiran (.pdf) : <?php echo $file_lampiran; ?><?php echo form_error('file_lampiran') ?></label>
-						<input type="file" name="file_lampiran">
-						<input class="file-path validate" type="hidden" name="file_lampiran">
-					</div>
-				</div>
-
-				<!-- <div class="form-group row">
-					<div class="col-xs-12">
-						<label for="varchar">File Abstrak (.pdf) : <?php echo $file_abstrak; ?><?php echo form_error('file_abstrak') ?></label>
-						<input type="file" name="file_abstrak">
-						<input class="file-path validate" type="hidden" name="file_abstrak">
-					</div>
-				</div> -->
-			</div>
-			<?php
-			$jenis_lembaran = array('LD', 'BD');
-			$jenis_tambahan = array('TLD', 'LL');
-			?>
-
-
-			<div class="col-md-12">
-				<br>
-				<div class="box box-solid box-success" data-widget="box-widget">
-					<div class="box-header">
-						<div style="text-align:center"><b>DESKRIPSI KATALOG</b></div>
-					</div>
-					<div class="box-body">
-						<div class="col-md-12">
-							<div class="col-md-6">
-								<h4 class="text-center">Catatan Lembaran</h4>
-								<hr>
-								<div class="form-group">
-									<label for="int">Jenis Lembaran <?php echo form_error('ktlglembaran_jenis') ?></label>
-									<select class="form-control" name="ktlglembaran_jenis" id="ktlglembaran_jenis">
-										<option value="-">-Pilih Jenis Lembaran-</option>
-										<?php
-										$selected = "";
-										foreach ($jenis_lembaran as $v_jenis_lembaran) {
-											if ($v_jenis_lembaran == $ktlglembaran_jenis) {
-												$selected = "selected";
-											} else {
-												$selected = "";
-											}
-										?>
-											<option value="<?= $v_jenis_lembaran ?>" <?= $selected ?>><?= $v_jenis_lembaran ?></option>
-										<?php
-										}
-										?>
-
-									</select>
-									<!-- <input type="text" class="form-control" name="ktlglembaran_jenis" id="ktlglembaran_jenis" placeholder="Jenis Lembaran" value="<?php echo $ktlglembaran_jenis; ?>" /> -->
-								</div>
-								<div class="form-group">
-									<label for="int">Tahun <?php echo form_error('ktlglembaran_tahun') ?></label>
-									<input type="text" class="form-control" name="ktlglembaran_tahun" id="ktlglembaran_tahun" placeholder="Tahun" value="<?php echo $ktlglembaran_tahun; ?>" />
-								</div>
-								<div class="form-group">
-									<label for="int">Nomor <?php echo form_error('ktlglembaran_no') ?></label>
-									<input type="text" class="form-control" name="ktlglembaran_no" id="ktlglembaran_no" placeholder="Nomor" value="<?php echo $ktlglembaran_no; ?>" />
-								</div>
-								<div class="form-group">
-									<label for="int">Jumlah Halaman <?php echo form_error('ktlglembaran_jum_halaman') ?></label>
-									<input type="text" class="form-control" name="ktlglembaran_jum_halaman" id="ktlglembaran_jum_halaman" placeholder="Jumlah Halaman" value="<?php echo $ktlglembaran_jum_halaman; ?>" />
-								</div>
-							</div>
-
-							<div class="col-md-6">
-								<h4 class="text-center">Catatan Tambahan</h4>
-								<hr>
-								<div class="form-group">
-									<label for="int">Jenis Lembaran <?php echo form_error('ktlgtambahan_jenis') ?></label>
-									<select class="form-control" name="ktlgtambahan_jenis" id="ktlgtambahan_jenis">
-										<option value="-">-Pilih Jenis Lembaran-</option>
-										<?php
-										$selected = "";
-										foreach ($jenis_tambahan as $v_jenis_tambahan) {
-											if ($v_jenis_tambahan == $ktlgtambahan_jenis) {
-												$selected = "selected";
-											} else {
-												$selected = "";
-											}
-										?>
-											<option value="<?= $v_jenis_tambahan ?>" <?= $selected ?>><?= $v_jenis_tambahan ?></option>
-										<?php
-										}
-										?>
-
-									</select>
-									<!-- <input type="text" class="form-control" name="ktlgtambahan_jenis" id="ktlgtambahan_jenis" placeholder="Jenis Lembaran" value="<?php echo $ktlgtambahan_jenis; ?>" /> -->
-								</div>
-
-								<div class="form-group">
-									<label for="int">Tahun <?php echo form_error('ktlgtambahan_tahun') ?></label>
-									<input type="text" class="form-control" name="ktlgtambahan_tahun" id="ktlgtambahan_tahun" placeholder="Tahun" value="<?php echo $ktlgtambahan_tahun; ?>" />
-								</div>
-
-								<div class="form-group">
-									<label for="int">Nomor <?php echo form_error('ktlgtambahan_no') ?></label>
-									<input type="text" class="form-control" name="ktlgtambahan_no" id="ktlgtambahan_no" placeholder="Nomor" value="<?php echo $ktlgtambahan_no; ?>" />
-								</div>
-
-								<div class="form-group">
-									<label for="int">Jumlah Halaman <?php echo form_error('ktlgtambahan_jum_halaman') ?></label>
-									<input type="text" class="form-control" name="ktlgtambahan_jum_halaman" id="ktlgtambahan_jum_halaman" placeholder="Jumlah Halaman" value="<?php echo $ktlgtambahan_jum_halaman; ?>" />
-								</div>
-
-							</div>
-
-						</div>
-					</div>
-				</div>
-			</div>
-
-
-
-			<!-- /.box-body -->
-
-			<div class="box-footer">
-				<div class="col-md-12">
-					<div class="form-group pull-right">
-						<input type="hidden" name="id_produk_hukum" value="<?php echo $id_produk_hukum; ?>" />
-						<button type="submit" class="btn btn-primary"><?php echo $button ?></button>
-						<a href="<?php echo site_url('ta_produk_hukum') ?>" class="btn btn-default">Batal</a>
-					</div>
-				</div>
-				<?php echo form_close(); ?>
-			</div>
-			<!-- /.box-footer-->
-		</div>
-
+        <div class="box-footer">
+            <button type="submit" class="btn btn-success btn-lg"><i class="fa fa-save"></i> Simpan Data</button> 
+            <a href="<?php echo site_url('ta_produk_hukum') ?>" class="btn btn-default btn-lg">Batal</a>
+        </div>
+        <?php echo form_close(); ?>
+    </div>
 </section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        
+        function checkKategori() {
+            // Ambil text dari option yang dipilih (karena ID kategori mungkin beda-beda di DB)
+            // Kita deteksi berdasarkan kata kuncinya
+            var selectedText = $("#id_kategori option:selected").text().toLowerCase();
+            
+            // Sembunyikan semua dulu
+            $(".meta-group").hide();
+
+            // Logika Tampil
+            if (selectedText.includes("putusan") || selectedText.includes("pengadilan")) {
+                $("#meta_putusan").show();
+            } 
+            else if (selectedText.includes("monografi") || selectedText.includes("buku")) {
+                $("#meta_monografi").show();
+            }
+            else if (selectedText.includes("artikel") || selectedText.includes("jurnal")) {
+                $("#meta_artikel").show();
+            }
+            else {
+                // Default ke Peraturan jika kosong atau kategori lain (Perda, Perbup, dll)
+                $("#meta_peraturan").show();
+            }
+        }
+
+        // Jalankan saat load (untuk mode edit)
+        checkKategori();
+
+        // Jalankan saat diganti
+        $("#id_kategori").change(function() {
+            checkKategori();
+        });
+    });
+</script>

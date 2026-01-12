@@ -28,6 +28,10 @@ class Ref_aplikasi extends CI_Controller
 		'email' => set_value('email', $row->email),
 		'fax' => set_value('fax', $row->fax),
 		'no_telpn' => set_value('no_telpn', $row->no_telpn),
+        'fb' => set_value('fb', $row->fb),
+        'ig' => set_value('ig', $row->ig),
+        'twitter' => set_value('twitter', $row->twitter),
+        'yt' => set_value('yt', $row->yt),
 	    );
             
 			$this->template->load('backend/template','backend/ref_aplikasi/ref_aplikasi_form', $data);
@@ -52,6 +56,11 @@ class Ref_aplikasi extends CI_Controller
 		'email' => $this->input->post('email',TRUE),
 		'fax' => $this->input->post('fax',TRUE),
 		'no_telpn' => $this->input->post('no_telpn',TRUE),
+        'fb' => $this->input->post('fb',TRUE),
+        'ig' => $this->input->post('ig',TRUE),
+        'twitter' => $this->input->post('twitter',TRUE),
+        'yt' => $this->input->post('yt',TRUE),
+
 	    );
 
             $this->Ref_aplikasi_model->update("1", $data);
@@ -68,6 +77,10 @@ class Ref_aplikasi extends CI_Controller
 	$this->form_validation->set_rules('email', 'email', 'trim|required');
 	$this->form_validation->set_rules('fax', 'fax', 'trim|required');
 	$this->form_validation->set_rules('no_telpn', 'no telpn', 'trim|required');
+    $this->form_validation->set_rules('fb', 'Facebook', 'trim');
+    $this->form_validation->set_rules('ig', 'Instagram', 'trim');
+    $this->form_validation->set_rules('twitter', 'Twitter', 'trim');
+    $this->form_validation->set_rules('yt', 'Youtube', 'trim');
 
 	$this->form_validation->set_rules('id', 'id', 'trim');
 	$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');

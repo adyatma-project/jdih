@@ -56,6 +56,52 @@
             <input type="text" class="form-control" name="no_telpn" id="no_telpn" placeholder="No Telpn" value="<?php echo $no_telpn; ?>" />
         </div>
 	    <input type="hidden" name="" value="<?php echo $id; ?>" /> 
+      <div class="row">
+    <div class="col-md-12">
+        <h4 class="text-primary"><i class="fa fa-share-alt"></i> Akun Media Sosial</h4>
+        <hr>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="varchar">Facebook URL</label>
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-facebook"></i></div>
+                <input type="text" class="form-control" name="fb" id="fb" placeholder="Contoh: https://facebook.com/jdihdonggala" value="<?php echo $fb; ?>" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="varchar">Instagram URL</label>
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-instagram"></i></div>
+                <input type="text" class="form-control" name="ig" id="ig" placeholder="Contoh: https://instagram.com/jdih_donggala" value="<?php echo $ig; ?>" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="varchar">Twitter / X URL</label>
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-twitter"></i></div>
+                <input type="text" class="form-control" name="twitter" id="twitter" placeholder="Link Twitter" value="<?php echo $twitter; ?>" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="varchar">Youtube Channel URL</label>
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-youtube-play"></i></div>
+                <input type="text" class="form-control" name="yt" id="yt" placeholder="Link Youtube" value="<?php echo $yt; ?>" />
+            </div>
+        </div>
+    </div>
+</div>
 	    <button type="submit" class="btn btn-primary"><?php echo $button ?></button> 
 	    
 	</form>
