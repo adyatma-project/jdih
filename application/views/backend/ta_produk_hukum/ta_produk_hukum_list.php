@@ -32,7 +32,14 @@
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-4">
                     <?php echo anchor(site_url('ta_produk_hukum/create'),'<i class="fa fa-plus"></i> Tambah Data', 'class="btn btn-primary"'); ?>
-                    <?php echo anchor(site_url('ta_produk_hukum/excel'), '<i class="fa fa-file-excel-o"></i> Excel', 'class="btn btn-success"'); ?>
+                   <?php 
+    // Ambil query pencarian saat ini agar hasil Excel sesuai dengan filter
+    $q = urldecode($this->input->get('q', TRUE));
+?>
+
+<a href="<?php echo site_url('ta_produk_hukum/excel?q='.urlencode($q)); ?>" class="btn btn-success">
+    <i class="fa fa-file-excel-o"></i> Excel
+</a>
                 </div>
                 
                 <div class="col-md-4 text-center">

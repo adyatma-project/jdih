@@ -13,7 +13,59 @@ class Ta_produk_hukum extends CI_Controller
         $this->load->helper('statusperaturan_helper');
         $this->load->helper('tanggal_helper');
     }
+    public function excel()
+    {
+        if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
+            
+            // 1. Ambil Query Pencarian (jika user sedang mencari sesuatu)
+            $q = urldecode($this->input->get('q', TRUE));
+            
+            // 2. Ambil Data dari Model
+            $data['produk_hukum_data'] = $this->Ta_produk_hukum_model->get_all_for_export($q);
+            
+            // 3. Set Header untuk Download Excel
+            $filename = "Data_Produk_Hukum_" . date('Ymd') . ".xls";
+            header("Content-Type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=\"$filename\"");
+            
+            // 4. Load View Excel
+            $this->load->view('backend/ta_produk_hukum/ta_produk_hukum_excel', $data);
+            
+        } else {
+            redirect(base_url('backend'));
+        }
+    }
 
+    public function delete($id) 
+{
+    // Cek Login Admin
+    if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
+        
+        $row = $this->Ta_produk_hukum_model->get_by_id($id);
+
+        if ($row) {
+            // Hapus File Fisik (Penting!)
+            if ($row->file != "" && file_exists("./uploads/produk_hukum/" . $row->file)) {
+                unlink("./uploads/produk_hukum/" . $row->file);
+            }
+            
+            // Hapus Data di DB
+            $this->Ta_produk_hukum_model->delete($id);
+            
+            // Hapus Data Detail/Katalog (Jika ada relasi)
+            $this->Ta_produk_hukum_det_model->delete($id); 
+
+            $this->session->set_flashdata('message', '<div class="alert alert-success">Hapus Berhasil</div>');
+            redirect(site_url('ta_produk_hukum'));
+        } else {
+            $this->session->set_flashdata('message', '<div class="alert alert-warning">Data Tidak Ditemukan</div>');
+            redirect(site_url('ta_produk_hukum'));
+        }
+    } else {
+        // Jika belum login, redirect ke login page
+        redirect(site_url('backend')); 
+    }
+}
     public function index()
     {
         if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {

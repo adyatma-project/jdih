@@ -207,4 +207,18 @@ class Ta_produk_hukum_model extends CI_Model
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }
+
+    // Tambahkan fungsi ini di dalam Ta_produk_hukum_model
+    function get_all_for_export($q = NULL) {
+        $this->db->order_by($this->id, $this->order);
+        // Sesuaikan logika like ini dengan kolom pencarian yang Anda inginkan
+        $this->db->group_start(); // Mulai grouping OR
+        $this->db->like('no_peraturan', $q);
+        $this->db->or_like('tentang', $q);
+        $this->db->or_like('tahun', $q);
+        $this->db->or_like('teu_badan', $q);
+        $this->db->or_like('subjek', $q);
+        $this->db->group_end(); // Tutup grouping OR
+        return $this->db->get($this->table)->result();
+    }
 }
