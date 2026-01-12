@@ -271,6 +271,12 @@
           <li>
             <a href="<?php echo base_url() ?>ref_kabag"><i class="fa fa-user-secret text-black"></i> <span>Data Pejabat</span></a>
           </li>
+
+          <li class="<?php echo $this->uri->segment(1) == 'ta_link_eksternal' ? 'active' : '' ?>">
+    <a href="<?php echo site_url('ta_link_eksternal'); ?>">
+        <i class="fa fa-link"></i> <span>Link Terkait</span>
+    </a>
+</li> 
           
           <li class="treeview">
             <a href="#"><i class="fa fa-image text-aqua"></i> <span>Slider</span>

@@ -28,7 +28,7 @@ class Ta_link_terkait extends CI_Controller
                 $config['first_url'] = base_url() . 'ta_link_terkait';
             }
 
-            $config['per_page'] = 10;
+            $config['per_page'] = 25;
             $config['page_query_string'] = TRUE;
             $config['total_rows'] = $this->Ta_link_terkait_model->total_rows($q);
             $ta_link = $this->Ta_link_terkait_model->get_limit_data($config['per_page'], $start, $q);

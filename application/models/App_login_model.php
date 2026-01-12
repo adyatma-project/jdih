@@ -6,7 +6,7 @@ class App_Login_Model extends CI_Model
 	public function getLoginData($data)
 	{
 		$login['username'] = $data['username'];
-		$login['password'] = md5($data['password'] . 'jdihdonggala@xxxaseww21%^&^$#');
+		$login['password'] = md5($data['password'] . 'jdihlutra@xxxaseww21%^&^$#');
 		$cek = $this->db->get_where('tbl_user_login', $login);
 		if ($cek->num_rows() > 0) {
 			foreach ($cek->result() as $qad) {
