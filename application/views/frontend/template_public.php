@@ -325,7 +325,7 @@ $menu_links = $ci->Ta_link_eksternal_model->get_active_links1();
     <ul class="dropdown-menu shadow-lg border-0 rounded-4 p-2" aria-labelledby="navbarDasarHukum">
         
      <li>
-            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/dasar_hukum/dasarhukum'); ?>">
+            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/dasar_hukum/dasar_hukum'); ?>">
                 <i class="bi bi-diagram-3 text-success me-2"></i> Dasar Hukum
             </a>
         </li>

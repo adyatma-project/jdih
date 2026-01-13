@@ -41,12 +41,29 @@
         letter-spacing: 1px;
     }
 
-    /* Sidebar Modern */
+    /* Sidebar Modern & SCROLL FIX */
     .main-sidebar {
         background-color: #ffffff; /* Sidebar Putih Bersih */
         box-shadow: 2px 0 10px rgba(0,0,0,0.05);
         border-right: 1px solid #f0f0f0;
+        
+        /* --- PERBAIKAN SCROLL --- */
+        position: fixed; 
+        height: 100vh;
+        overflow-y: auto; /* Aktifkan scroll vertikal */
+        z-index: 810; /* Pastikan di atas konten tapi di bawah header jika perlu */
+        padding-bottom: 50px; /* Ruang agar menu paling bawah tidak terpotong */
     }
+    
+    /* Sembunyikan Scrollbar default agar rapi (Opsional) */
+    .main-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .main-sidebar::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 3px;
+    }
+
     .skin-blue .wrapper, .skin-blue .main-sidebar, .skin-blue .left-side {
         background-color: #fff;
     }
@@ -165,17 +182,9 @@
 
   <link rel="shortcut icon" href="<?php echo base_url(); ?>template/ico/favicon.png">
 
-  <!-- <script src="<?php echo base_url() ?>assets/tinymce/tiny_mce.js"></script> -->
   <script src="<?php echo base_url(); ?>assets/highcharts/highcharts.js"></script>
   <script src="<?php echo base_url(); ?>assets/highcharts/exporting.js"></script>
   <script src="<?php echo base_url(); ?>assets/highcharts/export-data.js"></script>
-
-  <!-- <script type="text/javascript">
-    tinyMCE.init({
-      mode: "textareas",
-      theme: "advanced",
-    });
-  </script> -->
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini fixed">
@@ -273,10 +282,10 @@
           </li>
 
           <li class="<?php echo $this->uri->segment(1) == 'ta_link_eksternal' ? 'active' : '' ?>">
-    <a href="<?php echo site_url('ta_link_eksternal'); ?>">
-        <i class="fa fa-link"></i> <span>Link Terkait</span>
-    </a>
-</li> 
+            <a href="<?php echo site_url('ta_link_eksternal'); ?>">
+                <i class="fa fa-link"></i> <span>Link Terkait</span>
+            </a>
+          </li> 
           
           <li class="treeview">
             <a href="#"><i class="fa fa-image text-aqua"></i> <span>Slider</span>
@@ -300,24 +309,27 @@
           <li><a href="<?php echo base_url() ?>Ta_link_terkait"><i class="fa fa-link text-maroon"></i> <span>Jejaring / Link</span></a></li>
 
           <li class="header" style="background:transparent; color:#999; font-size:11px;">SYSTEM</li>
-<li class="treeview">
-  <a href="#"><i class="fa fa-comments-o text-teal"></i> <span>Interaksi Publik</span>
-    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
-  </a>
-  <ul class="treeview-menu">
-    <li><a href="<?php echo base_url() ?>atur_interaksi"><i class="fa fa-circle-o"></i> Atur Link Form</a></li>
-  </ul>
-</li>
+          
+          <li class="treeview">
+            <a href="#"><i class="fa fa-comments-o text-teal"></i> <span>Interaksi Publik</span>
+              <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+            </a>
+            <ul class="treeview-menu">
+              <li><a href="<?php echo base_url() ?>atur_interaksi"><i class="fa fa-circle-o"></i> Atur Link Form</a></li>
+            </ul>
+          </li>
 
-<li class="treeview">
-  <a href="#"><i class="fa fa-university text-yellow"></i> <span>Profil & Halaman</span>
-    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
-  </a>
-  <ul class="treeview-menu">
-    <li><a href="<?php echo base_url('atur_halaman/edit/sop') ?>"><i class="fa fa-circle-o"></i> Edit SOP</a></li>
-    <li><a href="<?php echo base_url('atur_halaman/edit/struktur') ?>"><i class="fa fa-circle-o"></i> Edit Struktur Org</a></li>
-  </ul>
-</li>
+          <li class="treeview">
+            <a href="#"><i class="fa fa-university text-yellow"></i> <span>Profil & Halaman</span>
+              <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+            </a>
+            <ul class="treeview-menu">
+              <li><a href="<?php echo base_url('atur_halaman/edit/dasar_hukum') ?>"><i class="fa fa-circle-o"></i> Edit Dasar Hukum</a></li>
+              <li><a href="<?php echo base_url('atur_halaman/edit/sop') ?>"><i class="fa fa-circle-o"></i> Edit SOP</a></li>
+              <li><a href="<?php echo base_url('atur_halaman/edit/struktur') ?>"><i class="fa fa-circle-o"></i> Edit Struktur Org</a></li>
+            </ul>
+          </li>
+
           <li class="treeview">
             <a href="#"><i class="fa fa-cogs text-gray"></i> <span>Pengaturan</span>
               <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
@@ -327,6 +339,7 @@
               <li><a href="<?php echo base_url() ?>manage_user">Manajemen Pengguna</a></li>
             </ul>
           </li>
+          
           <li><a href="<?php echo base_url() ?>backend/logout"><i class="fa fa-power-off text-red"></i> <span>Log Out</span></a></li>
         </ul>
       </section>
@@ -388,9 +401,6 @@
         if(document.getElementById("myP")) document.getElementById("myP").style.display = "";
       }
     });
-
-    // ... (Sisa script JS lama Anda tetap dipertahankan disini agar fungsionalitas tidak hilang) ...
-    // ... Copy paste logika add status/katalog disini jika perlu ...
   </script>
 </body>
 </html>
