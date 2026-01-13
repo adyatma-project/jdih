@@ -165,7 +165,7 @@
             <div class="map-container">
                 <iframe 
                     class="map-frame"
-                    src="https://maps.google.com/maps?q=<?php echo urlencode(isset($profil->alamat) ? $profil->alamat : 'Kantor Bupati Donggala'); ?>&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.5384300858527!2d119.7499884747237!3d-0.6786681993147144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2d8bb84fdde0d2cb%3A0xbc10bdf2c28577c3!2sDonggala%20Regent%20Office!5e0!3m2!1sen!2sid!4v1768232099144!5m2!1sen!2sid" 
                     allowfullscreen="" 
                     loading="lazy">
                 </iframe>

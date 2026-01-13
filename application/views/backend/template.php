@@ -300,7 +300,24 @@
           <li><a href="<?php echo base_url() ?>Ta_link_terkait"><i class="fa fa-link text-maroon"></i> <span>Jejaring / Link</span></a></li>
 
           <li class="header" style="background:transparent; color:#999; font-size:11px;">SYSTEM</li>
+<li class="treeview">
+  <a href="#"><i class="fa fa-comments-o text-teal"></i> <span>Interaksi Publik</span>
+    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+  </a>
+  <ul class="treeview-menu">
+    <li><a href="<?php echo base_url() ?>atur_interaksi"><i class="fa fa-circle-o"></i> Atur Link Form</a></li>
+  </ul>
+</li>
 
+<li class="treeview">
+  <a href="#"><i class="fa fa-university text-yellow"></i> <span>Profil & Halaman</span>
+    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+  </a>
+  <ul class="treeview-menu">
+    <li><a href="<?php echo base_url('atur_halaman/edit/sop') ?>"><i class="fa fa-circle-o"></i> Edit SOP</a></li>
+    <li><a href="<?php echo base_url('atur_halaman/edit/struktur') ?>"><i class="fa fa-circle-o"></i> Edit Struktur Org</a></li>
+  </ul>
+</li>
           <li class="treeview">
             <a href="#"><i class="fa fa-cogs text-gray"></i> <span>Pengaturan</span>
               <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>

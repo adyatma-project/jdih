@@ -122,6 +122,9 @@ class Ta_produk_hukum extends CI_Controller
                 'bahasa' => set_value('bahasa', 'Indonesia'),
                 'lokasi' => set_value('lokasi'),
                 'bidang_hukum' => set_value('bidang_hukum'),
+
+                'jenis_peraturan' => set_value('jenis_peraturan'), // TAMBAHKAN INI
+                'status_peraturan' => set_value('status_peraturan'), // TAMBAHKAN INI
                 
                 // Peraturan (Hlm 24)
                 'tentang' => set_value('tentang'),
@@ -188,6 +191,8 @@ class Ta_produk_hukum extends CI_Controller
             $judul = $this->input->post('tentang', TRUE); // Default Peraturan
             if(empty($judul)) $judul = $this->input->post('judul_buku', TRUE);
             if(empty($judul)) $judul = $this->input->post('judul_artikel', TRUE);
+
+            
             
             // 2. T.E.U Badan / Pengarang
             $teu = $this->input->post('teu_badan', TRUE); // Peraturan & Putusan
@@ -232,7 +237,8 @@ class Ta_produk_hukum extends CI_Controller
                 'status' => $this->input->post('status', TRUE),
                 'file' => $gambar_file,
                 'tgl_peraturan' => date('Y-m-d'),
-                
+                'jenis_peraturan' => $this->input->post('jenis_peraturan',TRUE),
+            'status_peraturan' => $this->input->post('status_peraturan',TRUE),
                 // Mapping Metadata Shared
                 'tentang' => $judul, // Kolom Utama Judul
                 'judul' => $judul,   // Kolom Baru (jika ada)
@@ -304,6 +310,9 @@ class Ta_produk_hukum extends CI_Controller
                     'button' => 'Ubah',
                     'action' => site_url('ta_produk_hukum/update_action'),
                     'id_produk_hukum' => set_value('id_produk_hukum', $row->id_produk_hukum),
+
+                    'jenis_peraturan' => set_value('jenis_peraturan', $row->jenis_peraturan), // TAMBAHKAN INI (ambil dari db)
+        'status_peraturan' => set_value('status_peraturan', $row->status_peraturan), // TAMBAHKAN INI (ambil dari db)
                     
                     'id_kategori' => set_value('id_kategori', $row->id_kategori),
                     'file' => set_value('file', $row->file),
@@ -405,7 +414,8 @@ class Ta_produk_hukum extends CI_Controller
                 'lokasi' => $this->input->post('lokasi', TRUE),
                 'bidang_hukum' => $this->input->post('bidang_hukum', TRUE),
                 'sumber' => $sumber,
-
+                'jenis_peraturan' => $this->input->post('jenis_peraturan',TRUE),
+                'status_peraturan' => $this->input->post('status_peraturan',TRUE),
                 'no_peraturan' => $this->input->post('no_peraturan', TRUE),
                 'singkatan_jenis' => $this->input->post('singkatan_jenis', TRUE),
                 'tempat_penetapan' => $tempat,

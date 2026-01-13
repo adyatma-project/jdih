@@ -250,7 +250,7 @@ $menu_links = $ci->Ta_link_eksternal_model->get_active_links1();
         }
 
         /* Styling Dropdown Menu Link Terkait */
-    .bg-blue-soft {
+    .bg-blue-soft {leng
         background-color: #eff6ff !important;
         color: #2563eb !important;
     }
@@ -317,19 +317,42 @@ $menu_links = $ci->Ta_link_eksternal_model->get_active_links1();
                             <a class="nav-link" href="<?php echo base_url(); ?>">Beranda</a>
                         </li>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profil
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li>
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDasarHukum" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Profil
+    </a>
+    <ul class="dropdown-menu shadow-lg border-0 rounded-4 p-2" aria-labelledby="navbarDasarHukum">
+        
+     <li>
+            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/dasar_hukum/dasarhukum'); ?>">
+                <i class="bi bi-diagram-3 text-success me-2"></i> Dasar Hukum
+            </a>
+        </li>
+    <li>
+            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/dasar_hukum/sop'); ?>">
+                <i class="bi bi-file-earmark-text text-primary me-2"></i> SOP
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/dasar_hukum/struktur'); ?>">
+                <i class="bi bi-diagram-3 text-success me-2"></i> Struktur Organisasi
+            </a>
+        </li>
+
+         <li>
                                     <a class="dropdown-item" href="<?php echo base_url() ?>frontend/visimisi">
                                         <i class="fa fa-bullseye"></i> Visi dan Misi
                                     </a>
                                 </li>
-                                
-                            </ul>
-                        </li>
+    </ul>
+</li>
+
+
+
+
+
+                    
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarProd" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -337,27 +360,57 @@ $menu_links = $ci->Ta_link_eksternal_model->get_active_links1();
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarProd">
                                 <li>
+
+ <a class="dropdown-item" href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list?q=&no_peraturan=&tahun=&ref_kategori=2&ref_status_peraturan=">
+                                        <i class="fa fa-search"></i> Peraturan Daerah
+                                    </a>
+                                    <a class="dropdown-item" href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list?q=&no_peraturan=&tahun=&ref_kategori=3&ref_status_peraturan=">
+                                        <i class="fa fa-search"></i> Peraturan Bupati
+                                    </a>
+                                    <a class="dropdown-item" href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list?q=&no_peraturan=&tahun=&ref_kategori=5&ref_status_peraturan=">
+                                        <i class="fa fa-search"></i> Keputusan Bupati
+                                    </a>
+                                    <a class="dropdown-item" href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list?q=&no_peraturan=&tahun=&ref_kategori=12&ref_status_peraturan=">
+                                        <i class="fa fa-search"></i> Monografi Hukum
+                                    </a>
+                                    <a class="dropdown-item" href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list?q=&no_peraturan=&tahun=&ref_kategori=13&ref_status_peraturan=">
+                                        <i class="fa fa-search"></i> Artikel Hukum
+                                    </a>
+                                    <a class="dropdown-item" href="https://jdih.donggala.go.id/frontendprodukhukum/produk_hukum_list?q=&no_peraturan=&tahun=&ref_kategori=14&ref_status_peraturan=">
+                                        <i class="fa fa-search"></i> Putusan Pengadilan / Yurisprudensi
+                                    </a>
+                                
+
+
                                     <a class="dropdown-item" href="<?php echo base_url() ?>frontendprodukhukum/produk_hukum_list">
                                         <i class="fa fa-search"></i> Pencarian Lengkap
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php echo base_url() ?>frontendprodukhukum/produk_hukum_list?kategori=Peraturan+Daerah">
-                                        <i class="fa fa-book"></i> Peraturan Daerah
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php echo base_url() ?>frontendprodukhukum/produk_hukum_list?kategori=Peraturan+Bupati">
-                                        <i class="fa fa-gavel"></i> Peraturan Bupati
-                                    </a>
-                                </li>
+                                
                             </ul>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="<?php echo base_url('berita'); ?>">Berita</a>
                         </li>
+
+                        <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarInteraksi" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Interaksi
+    </a>
+    <ul class="dropdown-menu shadow-lg border-0 rounded-4 p-2" aria-labelledby="navbarInteraksi">
+        <li>
+            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/interaksi/pengaduan'); ?>">
+                <i class="bi bi-chat-text-fill text-danger me-2"></i> Pengaduan Hukum
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item rounded-3 py-2" href="<?php echo base_url('frontend/interaksi/survei'); ?>">
+                <i class="bi bi-clipboard-data-fill text-success me-2"></i> Survei Kepuasan
+            </a>
+        </li>
+    </ul>
+</li>
 
 
                         <li class="nav-item dropdown">

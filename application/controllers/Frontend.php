@@ -127,6 +127,43 @@ class Frontend extends CI_Controller
         $this->template->load('frontend/template_public', 'frontend/beranda', $data);
     }
 
+    public function dasar_hukum($slug)
+    {
+        // 1. Ambil data dari tabel tbl_halaman
+        $halaman = $this->db->get_where('tbl_halaman', ['slug' => $slug])->row();
+
+        // Cek jika halaman tidak ditemukan
+        if (!$halaman) {
+            show_404();
+        }
+
+        $data['judul']   = $halaman->judul;
+        $data['konten']  = $halaman->isi_konten;
+        $data['updated'] = $halaman->updated_at;
+
+        // 2. Load View Frontend
+        $this->template->load('frontend/template_public', 'frontend/v_halaman_statis', $data);
+    }
+
+    public function interaksi($jenis = 'pengaduan')
+    {
+        // 1. Tentukan Jenis dan Ambil Link dari DB
+        if ($jenis == 'survei') {
+            $data['judul'] = 'Survei Kepuasan Masyarakat';
+            $db_jenis = 'survei';
+        } else {
+            $data['judul'] = 'Pengaduan & Konsultasi Hukum';
+            $db_jenis = 'pengaduan';
+        }
+
+        $row = $this->db->get_where('tbl_interaksi', ['jenis' => $db_jenis])->row();
+        $data['url_gform'] = ($row) ? $row->link_url : '#';
+
+        // 2. Load View (Menggunakan template frontend Anda)
+        // Pastikan nama file view sesuai langkah 3.B dibawah
+        $this->template->load('frontend/template_public', 'frontend/v_interaksi_embed', $data);
+    }
+
     public function visimisi()
     {
         $visimisi = $this->db->query('SELECT * FROM ref_visimisi')->result();

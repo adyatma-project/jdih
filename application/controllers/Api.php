@@ -6,132 +6,125 @@ class Api extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        // Load database default dari konfigurasi CodeIgniter
+        // Load database default dari konfigurasi CI
         $this->load->database();
-        $this->load->helper('url');
     }
 
-    public function jdihn()
+    public function index()
     {
-        // 1. Header JSON (Wajib)
-        header("Content-Type: application/json");
-        header("Access-Control-Allow-Origin: *"); // Agar bisa diakses server JDIHN
+        // Header JSON Wajib
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Access-Control-Allow-Origin: *"); // Opsional: agar bisa diakses dari domain lain
 
         $varjson = array();
 
-        // 2. Query Data Lengkap (Join Table)
-        // Kita ambil data yang statusnya Publish (1)
-        $this->db->select('
-            a.*, 
-            b.kategori, 
-            c.nama_status_peraturan,
-            d.pemrakarsa,
-            d.no_register
-        ');
-        $this->db->from('ta_produk_hukum a');
-        $this->db->join('ref_kategori b', 'a.id_kategori = b.id_kategori', 'left');
+        // 1. QUERY DATA
+        // Menggabungkan tabel produk hukum dengan kategori untuk mendapatkan nama jenisnya
+        $this->db->select('t.*, k.kategori as nama_kategori');
+        $this->db->from('ta_produk_hukum t');
+        $this->db->join('ref_kategori k', 't.id_kategori = k.id_kategori', 'left');
+        $this->db->where('t.status', '1'); // Hanya ambil yang statusnya Publish/Aktif
+        $this->db->order_by('t.id_produk_hukum', 'DESC');
         
-        // Join Status (Ambil status terakhir/utama)
-        // Logika: Kita ambil status dari tabel detail yang paling relevan
-        $this->db->join('ta_produk_hukum_det det', 'a.id_produk_hukum = det.id_produk_hukum', 'left');
-        $this->db->join('ref_status_peraturan c', 'det.id_status_peraturan = c.id_status_peraturan', 'left');
-        
-        // Join Katalog (untuk pemrakarsa)
-        $this->db->join('ta_produk_hukum_katalog d', 'a.id_produk_hukum = d.id_produk_hukum', 'left');
-
-        $this->db->where('a.status', '1'); // Hanya tampilkan yang statusnya PUBLISH
-        $this->db->group_by('a.id_produk_hukum'); // Hindari duplikat data
-        $this->db->order_by('a.id_produk_hukum', 'DESC');
-
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
             foreach ($query->result() as $row) {
-                $row_array = new stdClass();
-
-                // --- MAPPING DATA SESUAI STANDAR JDIHN ---
-
-                // Identitas Utama
-                $row_array->idData = $row->id_produk_hukum;
-                $row_array->tahun_pengundangan = $row->tahun;
                 
-                // Tanggal: Prioritas Tgl Pengundangan -> Tgl Penetapan -> Tgl Upload
-                if(!empty($row->tgl_pengundangan) && $row->tgl_pengundangan != '0000-00-00') {
-                    $row_array->tanggal_pengundangan = $row->tgl_pengundangan;
-                } elseif(!empty($row->tgl_penetapan) && $row->tgl_penetapan != '0000-00-00') {
-                    $row_array->tanggal_pengundangan = $row->tgl_penetapan;
-                } else {
-                    $row_array->tanggal_pengundangan = $row->tgl_peraturan; // Fallback
+                // Objek penampung sementara
+                $item = new stdClass();
+
+                // --- MAPPING DATA (Sesuai Standar Permenkumham 8/2019) ---
+
+                // 1. ID & TAHUN
+                $item->idData = $row->id_produk_hukum;
+                $item->tahun_pengundangan = !empty($row->tahun) ? $row->tahun : "0000";
+                
+                // 2. TANGGAL PENGUNDANGAN (Format YYYY-MM-DD)
+                // Jika kosong, gunakan default atau tgl_penetapan
+                $tgl = !empty($row->tanggal_pengundangan) ? $row->tanggal_pengundangan : 
+                       (!empty($row->tanggal_penetapan) ? $row->tanggal_penetapan : date('Y-m-d'));
+                $item->tanggal_pengundangan = $tgl;
+
+                // 3. JENIS & NOMOR
+                $item->jenis = $row->nama_kategori; // Contoh: Peraturan Bupati
+                $item->noPeraturan = !empty($row->no_peraturan) ? $row->no_peraturan : "-";
+
+                // 4. JUDUL
+                // Gunakan kolom 'tentang' atau 'judul' yang sudah kita buat
+                $judul_final = !empty($row->tentang) ? $row->tentang : $row->judul;
+                // Jika Putusan, formatnya beda
+                if(empty($judul_final) && !empty($row->nomor_putusan)) {
+                    $judul_final = "Putusan " . $row->jenis_peradilan . " Nomor " . $row->nomor_putusan;
                 }
+                $item->judul = $judul_final;
 
-                $row_array->jenis = $row->kategori; // Perda, Perbup, dll
-                $row_array->noPeraturan = $row->no_peraturan;
-                $row_array->judul = $row->tentang; // Di JDIH lokal 'tentang', di JDIHN 'judul'
+                // 5. METADATA MONOGRAFI (Buku)
+                $item->noPanggil = !empty($row->nomor_panggil) ? $row->nomor_panggil : "-";
+                $item->penerbit = !empty($row->penerbit) ? $row->penerbit : "-";
+                $item->deskripsiFisik = !empty($row->deskripsi_fisik) ? $row->deskripsi_fisik : "-";
+                $item->isbn = !empty($row->isbn) ? $row->isbn : "-";
+                $item->nomorIndukBuku = !empty($row->nomor_induk_buku) ? $row->nomor_induk_buku : "-";
 
-                // Khusus Buku/Monografi
-                $row_array->noPanggil = $row->klasifikasi ? $row->klasifikasi : '-'; 
-                
-                // Singkatan Jenis (Manual Logic sederhana)
-                $jenis_upper = strtoupper($row->kategori);
-                if(strpos($jenis_upper, 'DAERAH') !== false) $singkatan = "PERDA";
-                elseif(strpos($jenis_upper, 'BUPATI') !== false) $singkatan = "PERBUP";
-                elseif(strpos($jenis_upper, 'KEPUTUSAN') !== false) $singkatan = "KEP";
-                elseif(strpos($jenis_upper, 'SURAT') !== false) $singkatan = "SE";
-                else $singkatan = "-";
-                $row_array->singkatanJenis = $singkatan;
+                // 6. SINGKATAN JENIS (Wajib untuk Peraturan)
+                $item->singkatanJenis = !empty($row->singkatan_jenis) ? $row->singkatan_jenis : "-";
 
-                $row_array->tempatTerbit = $row->tempat_penetapan ? $row->tempat_penetapan : 'Donggala';
-                $row_array->penerbit = $row->penerbit ? $row->penerbit : 'Pemerintah Kabupaten Donggala';
-                $row_array->deskripsiFisik = $row->halaman ? $row->halaman . ' Halaman' : '-';
-                
-                // Sumber (Gabungan LN/TLN/BN)
-                $sumber_text = "";
-                if($row->sumber_ln) $sumber_text .= "LN: ".$row->sumber_ln." ";
-                if($row->sumber_tln) $sumber_text .= "TLN: ".$row->sumber_tln." ";
-                if($row->sumber_bn) $sumber_text .= "BN: ".$row->sumber_bn;
-                $row_array->sumber = $sumber_text ? $sumber_text : '-';
+                // 7. TEMPAT TERBIT (Bisa tempat penetapan atau tempat terbit buku)
+                $tempat = !empty($row->tempat_penetapan) ? $row->tempat_penetapan : 
+                          (!empty($row->tempat_terbit) ? $row->tempat_terbit : "-");
+                $item->tempatTerbit = $tempat;
 
-                $row_array->subjek = $row->subjek ? $row->subjek : '-';
-                $row_array->isbn = $row->isbn ? $row->isbn : '-';
-                
-                // Status (Berlaku/Dicabut)
-                $row_array->status = $row->nama_status_peraturan ? $row->nama_status_peraturan : 'Berlaku';
-                
-                $row_array->bahasa = "Indonesia";
-                $row_array->bidangHukum = "-"; // Bisa disesuaikan jika ada kolom bidang hukum
-                
-                // Author / TEU Badan
-                if(!empty($row->pemrakarsa)){
-                    $row_array->teuBadan = $row->pemrakarsa;
-                } elseif(!empty($row->penulis)) {
-                    $row_array->teuBadan = $row->penulis;
-                } else {
-                    $row_array->teuBadan = "Pemerintah Kabupaten Donggala";
-                }
+                // 8. SUMBER
+                $item->sumber = !empty($row->sumber) ? $row->sumber : "-";
 
-                $row_array->nomorIndukBuku = "-"; // Kosongkan jika tidak ada
+                // 9. SUBJEK
+                $item->subjek = !empty($row->subjek) ? $row->subjek : "-";
 
-                // File & URL
-                $row_array->fileDownload = $row->file;
-                // Pastikan base_url di config.php sudah benar (https)
-                $row_array->urlDownload = base_url('uploads/produk_hukum/' . $row->file);
-                
-                $row_array->abstrak = strip_tags($row->abstrak); // Bersihkan tag HTML
-                
-                // URL Abstrak (Jika ada file abstrak terpisah, jika tidak samakan dengan detail)
-                $row_array->urlabstrak = base_url('frontendprodukhukum/produk_hukum_page/' . $row->id_produk_hukum);
-                
-                // URL Detail
-                $row_array->urlDetailPeraturan = base_url('frontendprodukhukum/produk_hukum_page/' . $row->id_produk_hukum);
-                
-                $row_array->operasi = "4"; // Kode Integrasi (Insert/Update)
-                $row_array->display = "1"; // Tampilkan
+                // 10. STATUS (Teks)
+                // Mapping logika status ID ke Teks (Sesuaikan dengan referensi Anda)
+                // Asumsi: Status '1' di tabel utama adalah 'Berlaku'
+                // Jika Anda punya tabel ref_status_peraturan yang kompleks, perlu join tambahan
+                $item->status = "Berlaku"; 
 
-                array_push($varjson, $row_array);
+                // 11. BAHASA
+                $item->bahasa = !empty($row->bahasa) ? $row->bahasa : "Indonesia";
+
+                // 12. BIDANG HUKUM
+                $item->bidangHukum = !empty($row->bidang_hukum) ? $row->bidang_hukum : "-";
+
+                // 13. T.E.U BADAN / PENGARANG
+                $teu = !empty($row->teu_badan) ? $row->teu_badan : 
+                       (!empty($row->penulis) ? $row->penulis : "-");
+                $item->teuBadan = $teu;
+
+                // 14. FILE DOWNLOAD
+                $file_name = !empty($row->file) ? $row->file : "";
+                $item->fileDownload = $file_name;
+                
+                // URL Download Lengkap
+                $base_download = base_url('uploads/produk_hukum/');
+                $item->urlDownload = !empty($file_name) ? $base_download . $file_name : "";
+
+                // 15. ABSTRAK
+                $item->abstrak = !empty($row->abstrak) ? strip_tags($row->abstrak) : "-";
+                $item->urlabstrak = ""; // Kosongkan jika tidak ada file khusus abstrak
+
+                // 16. URL DETAIL HALAMAN
+                $item->urlDetailPeraturan = base_url('frontendprodukhukum/produk_hukum_page/' . $row->id_produk_hukum);
+
+                // 17. FIELD WAJIB JDIHN
+                $item->operasi = "4"; // 4 = Data Gabungan (Insert/Update)
+                $item->display = "1"; // 1 = Tampilkan
+
+                // Masukkan ke array utama
+                array_push($varjson, $item);
             }
             
-            echo json_encode($varjson, JSON_PRETTY_PRINT);
+            // Output JSON
+            echo json_encode($varjson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        
         } else {
+            // Jika data kosong
             echo json_encode(["message" => "0 results"]);
         }
     }
