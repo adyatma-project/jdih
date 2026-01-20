@@ -300,6 +300,7 @@ $menu_links = $ci->Ta_link_eksternal_model->get_active_links1();
         <nav class="navbar navbar-expand-lg navbar-custom navbar-dark sticky-top">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center gap-3" href="<?php echo base_url(); ?>">
+                    <img src="<?php echo base_url(); ?>template/img/donggala.png" alt="Logo" width="50" height="auto" class="d-inline-block align-text-top" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
                     <img src="<?php echo base_url(); ?>template/img/logo-jdih.png" alt="Logo" width="50" height="auto" class="d-inline-block align-text-top" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
                     <div class="brand-text text-start">
                         <span class="brand-title">JDIH KABUPATEN DONGGALA</span>

@@ -76,11 +76,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label-modern">Tahun</label>
-                        <input type="number" class="form-control form-control-modern" name="tahun" value="<?php echo $tahun; ?>" placeholder="Contoh: 2024">
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label-modern">Jenis / Kategori</label>
                         <select class="form-select form-select-modern" name="ref_kategori">
                             <option value="">Semua Kategori</option>
@@ -114,7 +109,7 @@
                     <input type="text" class="search-input-lg" name="tentang" value="<?php echo $tentang; ?>" placeholder="Ketik kata kunci judul, tentang, atau topik...">
                     
                     <input type="hidden" name="no_peraturan" value="<?php echo $no_peraturan; ?>">
-                    <input type="hidden" name="tahun" value="<?php echo $tahun; ?>">
+                    <!-- <input type="hidden" name="tahun" value="<?php echo $tahun; ?>"> -->
                     <input type="hidden" name="ref_kategori" value="<?php echo $kategori_selected; ?>"> <input type="hidden" name="ref_status_peraturan" value="<?php echo $status_peraturan; ?>">
                 </div>
             </form>
@@ -157,7 +152,7 @@
 
                             <div class="d-flex flex-wrap align-items-center mt-3 mb-4">
                                 <span class="meta-badge"><i class="bi bi-hash"></i> No. <?php echo $row->no_peraturan ?></span>
-                                <span class="meta-badge"><i class="bi bi-calendar-event"></i> Tahun <?php echo $row->tahun ?></span>
+                                <!-- <span class="meta-badge"><i class="bi bi-calendar-event"></i> Tahun <?php echo $row->tahun ?></span> -->
                                 <?php if(!empty($row->tanggal_penetapan) && $row->tanggal_penetapan != '0000-00-00'): ?>
                                     <span class="meta-badge"><i class="bi bi-pen"></i> <?php echo date('d M Y', strtotime($row->tanggal_penetapan)); ?></span>
                                 <?php endif; ?>

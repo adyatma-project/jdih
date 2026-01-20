@@ -36,22 +36,28 @@ class Api extends CI_Controller {
 
                 // --- MAPPING DATA (Sesuai Standar Permenkumham 8/2019) ---
 
-                // 1. ID & TAHUN
-                $item->idData = $row->id_produk_hukum;
-                $item->tahun_pengundangan = !empty($row->tahun) ? $row->tahun : "0000";
                 
-                // 2. TANGGAL PENGUNDANGAN (Format YYYY-MM-DD)
-                // Jika kosong, gunakan default atau tgl_penetapan
+                $item->idData = $row->id_produk_hukum;
+           
+                if (!empty($row->tahun)) {
+                    $item->tanggal_penetapan = $row->tahun;
+                } elseif (!empty($row->tanggal_penetapan) && $row->tanggal_penetapan != '0000-00-00') {
+                    $item->tahun_pengundangan = date('Y', strtotime($row->tanggal_penetapan));
+                } else {
+                    $item->tahun_pengundangan = "0000";
+                }
+                
+             
                 $tgl = !empty($row->tanggal_pengundangan) ? $row->tanggal_pengundangan : 
                        (!empty($row->tanggal_penetapan) ? $row->tanggal_penetapan : date('Y-m-d'));
+                
                 $item->tanggal_pengundangan = $tgl;
 
-                // 3. JENIS & NOMOR
+                
                 $item->jenis = $row->nama_kategori; // Contoh: Peraturan Bupati
                 $item->noPeraturan = !empty($row->no_peraturan) ? $row->no_peraturan : "-";
 
-                // 4. JUDUL
-                // Gunakan kolom 'tentang' atau 'judul' yang sudah kita buat
+                
                 $judul_final = !empty($row->tentang) ? $row->tentang : $row->judul;
                 // Jika Putusan, formatnya beda
                 if(empty($judul_final) && !empty($row->nomor_putusan)) {

@@ -68,7 +68,7 @@
                             <th width="30px" class="text-center">No</th>
                             <th><i class="fa fa-balance-scale"></i> Produk Hukum</th>
                             <th>Tentang</th>
-                            <th width="120px"><i class="fa fa-calendar"></i> Tanggal</th>
+                            <th width="120px"><i class="fa fa-calendar"></i> Terakhir Diperbaharui</th>
                             <th>Status</th>
                             <th width="50px" class="text-center"><i class="fa fa-eye"></i></th>
                             <th width="50px" class="text-center"><i class="fa fa-download"></i></th>
@@ -79,10 +79,28 @@
                         <?php foreach ($ta_produk_hukum_data as $ta_produk_hukum) { ?>
                         <tr>
                             <td class="text-center"><?php echo ++$start ?></td>
-                            <td>
-                                <strong><?php echo $ta_produk_hukum->kategori; ?></strong><br>
-                                Nomor <?php echo $ta_produk_hukum->no_peraturan; ?> Tahun <?php echo $ta_produk_hukum->tahun ?>
-                            </td>
+                            
+                            
+                           <td>
+    <strong><?php echo $ta_produk_hukum->kategori; ?></strong><br>
+    Nomor <?php echo $ta_produk_hukum->no_peraturan; ?> Tahun 
+    <?php 
+        // Logika Pengecekan Tahun
+        if (!empty($ta_produk_hukum->tahun)) {
+            // Jika field tahun terisi, gunakan itu
+            echo $ta_produk_hukum->tahun;
+        } elseif (!empty($ta_produk_hukum->tanggal_penetapan) && $ta_produk_hukum->tanggal_penetapan != '0000-00-00') {
+            // Jika kosong, ambil 4 digit tahun dari tanggal penetapan (misal: 2025-09-26 jadi 2025)
+            echo date('Y', strtotime($ta_produk_hukum->tanggal_penetapan));
+        } else {
+            // Jika keduanya kosong
+            echo '-';
+        }
+    ?>
+</td>
+                          
+                          
+                          
                             <td><?php echo $ta_produk_hukum->tentang ?></td>
                             <td><?php echo date('d M Y', strtotime($ta_produk_hukum->tgl_peraturan)); ?></td>
                             

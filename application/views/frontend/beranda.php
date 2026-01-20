@@ -737,7 +737,7 @@
                                 </small>
                             </div>
                             <span class="law-title">
-                                Nomor <?php echo $value->no_peraturan; ?> Tahun <?php echo $value->tahun; ?> tentang <?php echo $value->tentang; ?>
+                                 <?php echo $value->tentang; ?>
                             </span>
                         </a>
                     <?php } else: ?>

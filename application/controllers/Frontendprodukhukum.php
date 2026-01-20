@@ -136,6 +136,10 @@ class Frontendprodukhukum extends CI_Controller
                 'tempat_penetapan' => isset($row->tempat_penetapan) ? $row->tempat_penetapan : '',
                 'tgl_penetapan' => isset($row->tanggal_penetapan) ? $row->tanggal_penetapan : '',
                 'tgl_pengundangan' => isset($row->tanggal_pengundangan) ? $row->tanggal_pengundangan : '',
+                 'status_peraturan' => isset($row->status_peraturan) ? $row->status_peraturan : '',
+                'status_putusan' => isset($row->status_putusan) ? $row->status_putusan : '',
+                'jenis_peraturan' => isset($row->jenis_peraturan) ? $row->jenis_peraturan : '',
+
                 
                 // Sidebar Data
                 'ta_berita' => $ta_berita,
