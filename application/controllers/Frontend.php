@@ -70,20 +70,40 @@ class Frontend extends CI_Controller
         ")->row()->total;
 
         // 4. Ambil Data Grafik (Line Chart Tahunan)
+       // 4. Ambil Data Grafik (Line Chart Tahunan) - FIX TAHUN DARI TANGGAL PENETAPAN
         $query_grafik = $this->db->query("
             SELECT 
-                t.tahun,
-                SUM(CASE WHEN k.kategori LIKE '%Peraturan%' OR k.kategori LIKE '%Keputusan%' THEN 1 ELSE 0 END) as jum_peraturan,
-                SUM(CASE WHEN k.kategori LIKE '%Monografi%' THEN 1 ELSE 0 END) as jum_monografi,
-                SUM(CASE WHEN k.kategori LIKE '%Artikel%' THEN 1 ELSE 0 END) as jum_artikel,
-                SUM(CASE WHEN k.kategori LIKE '%Pengadilan%' THEN 1 ELSE 0 END) as jum_putusan
-            FROM ta_produk_hukum t
-            JOIN ref_kategori k ON t.id_kategori = k.id_kategori
-            WHERE t.status = '1' AND t.tahun > 0 
-            GROUP BY t.tahun 
-            ORDER BY t.tahun ASC
-        ")->result();
+                YEAR(t.tanggal_penetapan) as tahun,
+                
+                -- 1. Peraturan & Keputusan (Digabung)
+                SUM(CASE 
+                    WHEN LOWER(t.jenis_peraturan) LIKE '%peraturan%' 
+                      OR LOWER(t.jenis_peraturan) LIKE '%keputusan%' 
+                    THEN 1 ELSE 0 END) as jum_peraturan,
 
+                -- 2. Monografi
+                SUM(CASE 
+                    WHEN LOWER(t.jenis_peraturan) LIKE '%monografi%' 
+                    THEN 1 ELSE 0 END) as jum_monografi,
+
+                -- 3. Artikel
+                SUM(CASE 
+                    WHEN LOWER(t.jenis_peraturan) LIKE '%artikel%' 
+                    THEN 1 ELSE 0 END) as jum_artikel,
+
+                -- 4. Putusan Pengadilan
+                SUM(CASE 
+                    WHEN LOWER(t.jenis_peraturan) LIKE '%Pengadilan%' 
+                      OR LOWER(t.jenis_peraturan) LIKE '%pengadilan%' 
+                    THEN 1 ELSE 0 END) as jum_putusan
+
+            FROM ta_produk_hukum t
+            WHERE t.status = '1' 
+              AND t.tanggal_penetapan IS NOT NULL 
+              AND t.tanggal_penetapan != '0000-00-00'
+            GROUP BY YEAR(t.tanggal_penetapan)
+            ORDER BY tahun ASC
+        ")->result_array(); // Gunakan result_array agar mudah diparsing
         // 5. Ambil Data Pendukung Lainnya
         // Pastikan nama fungsi di model benar (saya asumsikan get_active_links)
         $links = $this->Ta_link_terkait_model->get_active_links(); 

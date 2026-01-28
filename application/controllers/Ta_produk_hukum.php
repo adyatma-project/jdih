@@ -10,62 +10,58 @@ class Ta_produk_hukum extends CI_Controller
         parent::__construct();
         $this->load->model(array('Ta_produk_hukum_model', 'Ta_katalog_model', 'Ta_produk_hukum_det_model', 'Ta_produk_hukum_katalog_model'));
         $this->load->library('form_validation');
+        $this->load->library('upload'); // Load library upload di construct
         $this->load->helper('statusperaturan_helper');
         $this->load->helper('tanggal_helper');
     }
+
     public function excel()
     {
         if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
-            
-            // 1. Ambil Query Pencarian (jika user sedang mencari sesuatu)
             $q = urldecode($this->input->get('q', TRUE));
-            
-            // 2. Ambil Data dari Model
             $data['produk_hukum_data'] = $this->Ta_produk_hukum_model->get_all_for_export($q);
             
-            // 3. Set Header untuk Download Excel
             $filename = "Data_Produk_Hukum_" . date('Ymd') . ".xls";
             header("Content-Type: application/vnd.ms-excel");
             header("Content-Disposition: attachment; filename=\"$filename\"");
             
-            // 4. Load View Excel
             $this->load->view('backend/ta_produk_hukum/ta_produk_hukum_excel', $data);
-            
         } else {
             redirect(base_url('backend'));
         }
     }
 
     public function delete($id) 
-{
-    // Cek Login Admin
-    if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
-        
-        $row = $this->Ta_produk_hukum_model->get_by_id($id);
+    {
+        if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
+            
+            $row = $this->Ta_produk_hukum_model->get_by_id($id);
 
-        if ($row) {
-            // Hapus File Fisik (Penting!)
-            if ($row->file != "" && file_exists("./uploads/produk_hukum/" . $row->file)) {
-                unlink("./uploads/produk_hukum/" . $row->file);
+            if ($row) {
+                // 1. Hapus File Utama
+                if ($row->file != "" && file_exists("./uploads/produk_hukum/" . $row->file)) {
+                    unlink("./uploads/produk_hukum/" . $row->file);
+                }
+
+                // 2. Hapus File Abstrak (JIKA ADA) - TAMBAHAN
+                if ($row->file_abstrak != "" && file_exists("./uploads/produk_hukum/" . $row->file_abstrak)) {
+                    unlink("./uploads/produk_hukum/" . $row->file_abstrak);
+                }
+                
+                $this->Ta_produk_hukum_model->delete($id);
+                $this->Ta_produk_hukum_det_model->delete($id); 
+
+                $this->session->set_flashdata('message', '<div class="alert alert-success">Hapus Berhasil</div>');
+                redirect(site_url('ta_produk_hukum'));
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-warning">Data Tidak Ditemukan</div>');
+                redirect(site_url('ta_produk_hukum'));
             }
-            
-            // Hapus Data di DB
-            $this->Ta_produk_hukum_model->delete($id);
-            
-            // Hapus Data Detail/Katalog (Jika ada relasi)
-            $this->Ta_produk_hukum_det_model->delete($id); 
-
-            $this->session->set_flashdata('message', '<div class="alert alert-success">Hapus Berhasil</div>');
-            redirect(site_url('ta_produk_hukum'));
         } else {
-            $this->session->set_flashdata('message', '<div class="alert alert-warning">Data Tidak Ditemukan</div>');
-            redirect(site_url('ta_produk_hukum'));
+            redirect(site_url('backend')); 
         }
-    } else {
-        // Jika belum login, redirect ke login page
-        redirect(site_url('backend')); 
     }
-}
+
     public function index()
     {
         if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
@@ -113,20 +109,17 @@ class Ta_produk_hukum extends CI_Controller
                 'id_produk_hukum' => set_value('id_produk_hukum'),
                 'id_kategori' => set_value('id_kategori'),
                 'file' => set_value('file'),
+                'file_abstrak' => set_value('file_abstrak'), // TAMBAHAN
                 'status' => set_value('status', '1'),
                 
-                // --- METADATA SESUAI PERMENKUMHAM 8/2019 ---
-                // Umum
+                // Metadata
                 'teu_badan' => set_value('teu_badan'),
                 'subjek' => set_value('subjek'),
                 'bahasa' => set_value('bahasa', 'Indonesia'),
                 'lokasi' => set_value('lokasi'),
                 'bidang_hukum' => set_value('bidang_hukum'),
-
-                'jenis_peraturan' => set_value('jenis_peraturan'), // TAMBAHKAN INI
-                'status_peraturan' => set_value('status_peraturan'), // TAMBAHKAN INI
-                
-                // Peraturan (Hlm 24)
+                'jenis_peraturan' => set_value('jenis_peraturan'),
+                'status_peraturan' => set_value('status_peraturan'),
                 'tentang' => set_value('tentang'),
                 'no_peraturan' => set_value('no_peraturan'),
                 'tahun' => set_value('tahun'),
@@ -134,9 +127,7 @@ class Ta_produk_hukum extends CI_Controller
                 'tempat_penetapan' => set_value('tempat_penetapan'),
                 'tgl_penetapan' => set_value('tgl_penetapan'),
                 'tgl_pengundangan' => set_value('tgl_pengundangan'),
-                'sumber' => set_value('sumber'), // Menggabungkan LN/TLN/BN
-
-                // Monografi (Hlm 56)
+                'sumber' => set_value('sumber'),
                 'judul_buku' => set_value('judul_buku'),
                 'penulis' => set_value('penulis'),
                 'nomor_panggil' => set_value('nomor_panggil'),
@@ -147,8 +138,6 @@ class Ta_produk_hukum extends CI_Controller
                 'deskripsi_fisik' => set_value('deskripsi_fisik'),
                 'isbn' => set_value('isbn'),
                 'nomor_induk_buku' => set_value('nomor_induk_buku'),
-
-                // Artikel (Hlm 81)
                 'judul_artikel' => set_value('judul_artikel'),
                 'penulis_artikel' => set_value('penulis_artikel'),
                 'nama_jurnal' => set_value('nama_jurnal'),
@@ -156,8 +145,6 @@ class Ta_produk_hukum extends CI_Controller
                 'halaman' => set_value('halaman'),
                 'tahun_terbit_art' => set_value('tahun_terbit_art'),
                 'tempat_terbit_art' => set_value('tempat_terbit_art'),
-
-                // Putusan (Hlm 92)
                 'nomor_putusan' => set_value('nomor_putusan'),
                 'jenis_peradilan' => set_value('jenis_peradilan'),
                 'singkatan_peradilan' => set_value('singkatan_peradilan'),
@@ -179,97 +166,95 @@ class Ta_produk_hukum extends CI_Controller
     {
         if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
             
-            // Validasi Wajib
             if (empty($this->input->post('id_kategori'))) {
                  $this->session->set_flashdata('message', '<div class="alert alert-danger">Kategori wajib dipilih!</div>');
                  redirect('ta_produk_hukum/create');
             }
 
-            // --- LOGIKA MAPPING INPUT KE DATABASE ---
-            
-            // 1. Judul Utama (Disimpan ke kolom 'tentang' & 'judul')
-            $judul = $this->input->post('tentang', TRUE); // Default Peraturan
+            // Mapping Variable
+            $judul = $this->input->post('tentang', TRUE); 
             if(empty($judul)) $judul = $this->input->post('judul_buku', TRUE);
             if(empty($judul)) $judul = $this->input->post('judul_artikel', TRUE);
-
             
-            
-            // 2. T.E.U Badan / Pengarang
-            $teu = $this->input->post('teu_badan', TRUE); // Peraturan & Putusan
-            if(empty($teu)) $teu = $this->input->post('penulis', TRUE); // Monografi
-            if(empty($teu)) $teu = $this->input->post('penulis_artikel', TRUE); // Artikel
+            $teu = $this->input->post('teu_badan', TRUE);
+            if(empty($teu)) $teu = $this->input->post('penulis', TRUE);
+            if(empty($teu)) $teu = $this->input->post('penulis_artikel', TRUE);
 
-            // 3. Tahun
             $tahun = $this->input->post('tahun', TRUE);
             if(empty($tahun)) $tahun = $this->input->post('tahun_terbit', TRUE);
             if(empty($tahun)) $tahun = $this->input->post('tahun_terbit_art', TRUE);
 
-            // 4. Tempat (Terbit/Penetapan/Peradilan)
             $tempat = $this->input->post('tempat_penetapan', TRUE);
             if(empty($tempat)) $tempat = $this->input->post('tempat_terbit', TRUE);
             if(empty($tempat)) $tempat = $this->input->post('tempat_terbit_art', TRUE);
             if(empty($tempat)) $tempat = $this->input->post('tempat_peradilan', TRUE);
 
-            // 5. Sumber
             $sumber = $this->input->post('sumber', TRUE);
-            if(empty($sumber)) $sumber = $this->input->post('nama_jurnal', TRUE); // Artikel pakai nama jurnal sebagai sumber
+            if(empty($sumber)) $sumber = $this->input->post('nama_jurnal', TRUE);
 
-            // Upload File
-            $this->load->library('upload');
-            $namafile = "Dokumen-" . date('YmdHis');
-            $config = array(
-                'upload_path' => "./uploads/produk_hukum/", 
-                'allowed_types' => "pdf|doc|docx", 
-                'overwrite' => FALSE,
-                'max_size' => "50480", // 50MB
-                'file_name' => $namafile 
-            );
-            $this->upload->initialize($config);
+            // --- PROSES UPLOAD FILE UTAMA ---
             $gambar_file = "";
-            if ($this->upload->do_upload('file')) { 
-                $gambar = $this->upload->data();
-                $gambar_file = $gambar['file_name'];
+            if (!empty($_FILES['file']['name'])) {
+                $namafile = "Dokumen-" . date('YmdHis');
+                $config['upload_path']   = "./uploads/produk_hukum/";
+                $config['allowed_types'] = "pdf|doc|docx";
+                $config['max_size']      = "50480"; // 50MB
+                $config['file_name']     = $namafile;
+                
+                $this->upload->initialize($config);
+                if ($this->upload->do_upload('file')) {
+                    $gambar = $this->upload->data();
+                    $gambar_file = $gambar['file_name'];
+                }
             }
 
-            // DATA ARRAY UTAMA
+            // --- PROSES UPLOAD FILE ABSTRAK (TAMBAHAN) ---
+            $abstrak_file = "";
+            if (!empty($_FILES['file_abstrak']['name'])) {
+                $namafile_abs = "Abstrak-" . date('YmdHis');
+                $config_abs['upload_path']   = "./uploads/produk_hukum/";
+                $config_abs['allowed_types'] = "pdf|doc|docx";
+                $config_abs['max_size']      = "50480"; // 50MB
+                $config_abs['file_name']     = $namafile_abs;
+                
+                // Penting: Initialize ulang untuk file kedua
+                $this->upload->initialize($config_abs);
+                if ($this->upload->do_upload('file_abstrak')) {
+                    $up_abs = $this->upload->data();
+                    $abstrak_file = $up_abs['file_name'];
+                }
+            }
+
             $data = array(
                 'id_kategori' => $this->input->post('id_kategori', TRUE),
                 'status' => $this->input->post('status', TRUE),
                 'file' => $gambar_file,
+                'file_abstrak' => $abstrak_file, // SIMPAN FILENAME ABSTRAK
                 'tgl_peraturan' => date('Y-m-d'),
                 'jenis_peraturan' => $this->input->post('jenis_peraturan',TRUE),
-            'status_peraturan' => $this->input->post('status_peraturan',TRUE),
-                // Mapping Metadata Shared
-                'tentang' => $judul, // Kolom Utama Judul
-                'judul' => $judul,   // Kolom Baru (jika ada)
-                'teu_badan' => $teu, // Kolom Pengarang
+                'status_peraturan' => $this->input->post('status_peraturan',TRUE),
+                'tentang' => $judul,
+                'judul' => $judul,
+                'teu_badan' => $teu,
                 'tahun' => $tahun,
                 'subjek' => $this->input->post('subjek', TRUE),
                 'bahasa' => $this->input->post('bahasa', TRUE),
                 'lokasi' => $this->input->post('lokasi', TRUE),
                 'bidang_hukum' => $this->input->post('bidang_hukum', TRUE),
                 'sumber' => $sumber,
-
-                // Spesifik Peraturan
                 'no_peraturan' => $this->input->post('no_peraturan', TRUE),
                 'singkatan_jenis' => $this->input->post('singkatan_jenis', TRUE),
                 'tempat_penetapan' => $tempat,
                 'tanggal_penetapan' => $this->input->post('tgl_penetapan', TRUE),
                 'tanggal_pengundangan' => $this->input->post('tgl_pengundangan', TRUE),
-                
-                // Spesifik Monografi
                 'nomor_panggil' => $this->input->post('nomor_panggil', TRUE),
                 'cetakan_edisi' => $this->input->post('cetakan_edisi', TRUE),
                 'penerbit' => $this->input->post('penerbit', TRUE),
                 'deskripsi_fisik' => $this->input->post('deskripsi_fisik', TRUE),
                 'isbn' => $this->input->post('isbn', TRUE),
                 'nomor_induk_buku' => $this->input->post('nomor_induk_buku', TRUE),
-
-                // Spesifik Artikel (Selain yg sudah di-map ke shared)
                 'volume' => $this->input->post('volume', TRUE),
                 'halaman' => $this->input->post('halaman', TRUE),
-
-                // Spesifik Putusan
                 'nomor_putusan' => $this->input->post('nomor_putusan', TRUE),
                 'jenis_peradilan' => $this->input->post('jenis_peradilan', TRUE),
                 'singkatan_peradilan' => $this->input->post('singkatan_peradilan', TRUE),
@@ -279,10 +264,8 @@ class Ta_produk_hukum extends CI_Controller
                 'amar_putusan' => $this->input->post('amar_putusan', TRUE),
             );
 
-            // Simpan Data
             $this->Ta_produk_hukum_model->insert($data);
             
-            // Simpan Status Awal (Berlaku)
             $insert_id = $this->db->insert_id();
             $data_perubahan = array(
                 'id_produk_hukum' => $insert_id,
@@ -310,23 +293,20 @@ class Ta_produk_hukum extends CI_Controller
                     'button' => 'Ubah',
                     'action' => site_url('ta_produk_hukum/update_action'),
                     'id_produk_hukum' => set_value('id_produk_hukum', $row->id_produk_hukum),
-
-                    'jenis_peraturan' => set_value('jenis_peraturan', $row->jenis_peraturan), // TAMBAHKAN INI (ambil dari db)
-        'status_peraturan' => set_value('status_peraturan', $row->status_peraturan), // TAMBAHKAN INI (ambil dari db)
-                    
+                    'jenis_peraturan' => set_value('jenis_peraturan', $row->jenis_peraturan),
+                    'status_peraturan' => set_value('status_peraturan', $row->status_peraturan),
                     'id_kategori' => set_value('id_kategori', $row->id_kategori),
                     'file' => set_value('file', $row->file),
+                    'file_abstrak' => set_value('file_abstrak', $row->file_abstrak), // TAMBAHAN
                     'status' => set_value('status', $row->status),
                     'ref_kategori' => $kategori,
 
-                    // Common
+                    // Mapping Data (Sama seperti sebelumnya)
                     'teu_badan' => set_value('teu_badan', $row->teu_badan),
                     'subjek' => set_value('subjek', $row->subjek),
                     'bahasa' => set_value('bahasa', $row->bahasa),
                     'lokasi' => set_value('lokasi', $row->lokasi),
                     'bidang_hukum' => set_value('bidang_hukum', $row->bidang_hukum),
-
-                    // Peraturan
                     'tentang' => set_value('tentang', $row->tentang),
                     'no_peraturan' => set_value('no_peraturan', $row->no_peraturan),
                     'tahun' => set_value('tahun', $row->tahun),
@@ -335,29 +315,23 @@ class Ta_produk_hukum extends CI_Controller
                     'tgl_penetapan' => set_value('tgl_penetapan', $row->tanggal_penetapan),
                     'tgl_pengundangan' => set_value('tgl_pengundangan', $row->tanggal_pengundangan),
                     'sumber' => set_value('sumber', $row->sumber),
-
-                    // Monografi
                     'judul_buku' => $row->tentang, 
                     'penulis' => $row->teu_badan,
                     'tahun_terbit' => $row->tahun,
                     'nomor_panggil' => set_value('nomor_panggil', $row->nomor_panggil),
                     'cetakan_edisi' => set_value('cetakan_edisi', $row->cetakan_edisi),
-                    'tempat_terbit' => set_value('tempat_terbit', $row->tempat_penetapan), // Sharing kolom tempat
+                    'tempat_terbit' => set_value('tempat_terbit', $row->tempat_penetapan),
                     'penerbit' => set_value('penerbit', $row->penerbit),
                     'deskripsi_fisik' => set_value('deskripsi_fisik', $row->deskripsi_fisik),
                     'isbn' => set_value('isbn', $row->isbn),
                     'nomor_induk_buku' => set_value('nomor_induk_buku', $row->nomor_induk_buku),
-
-                    // Artikel
                     'judul_artikel' => $row->tentang,
                     'penulis_artikel' => $row->teu_badan,
                     'tahun_terbit_art' => $row->tahun,
                     'tempat_terbit_art' => $row->tempat_penetapan,
-                    'nama_jurnal' => $row->sumber, // Sharing kolom sumber
+                    'nama_jurnal' => $row->sumber,
                     'volume' => set_value('volume', $row->volume),
                     'halaman' => set_value('halaman', $row->halaman),
-
-                    // Putusan
                     'nomor_putusan' => set_value('nomor_putusan', $row->nomor_putusan),
                     'jenis_peradilan' => set_value('jenis_peradilan', $row->jenis_peradilan),
                     'singkatan_peradilan' => set_value('singkatan_peradilan', $row->singkatan_peradilan),
@@ -381,7 +355,7 @@ class Ta_produk_hukum extends CI_Controller
     {
         if ($this->session->userdata('logged_in') != "" && $this->session->userdata('stts') == "administrator") {
             
-            // --- LOGIKA MAPPING INPUT SAMA DENGAN CREATE ---
+            // Mapping Variabel (Sama dengan create)
             $judul = $this->input->post('tentang', TRUE); 
             if(empty($judul)) $judul = $this->input->post('judul_buku', TRUE);
             if(empty($judul)) $judul = $this->input->post('judul_artikel', TRUE);
@@ -421,17 +395,14 @@ class Ta_produk_hukum extends CI_Controller
                 'tempat_penetapan' => $tempat,
                 'tanggal_penetapan' => $this->input->post('tgl_penetapan', TRUE),
                 'tanggal_pengundangan' => $this->input->post('tgl_pengundangan', TRUE),
-                
                 'nomor_panggil' => $this->input->post('nomor_panggil', TRUE),
                 'cetakan_edisi' => $this->input->post('cetakan_edisi', TRUE),
                 'penerbit' => $this->input->post('penerbit', TRUE),
                 'deskripsi_fisik' => $this->input->post('deskripsi_fisik', TRUE),
                 'isbn' => $this->input->post('isbn', TRUE),
                 'nomor_induk_buku' => $this->input->post('nomor_induk_buku', TRUE),
-
                 'volume' => $this->input->post('volume', TRUE),
                 'halaman' => $this->input->post('halaman', TRUE),
-
                 'nomor_putusan' => $this->input->post('nomor_putusan', TRUE),
                 'jenis_peradilan' => $this->input->post('jenis_peradilan', TRUE),
                 'singkatan_peradilan' => $this->input->post('singkatan_peradilan', TRUE),
@@ -441,26 +412,45 @@ class Ta_produk_hukum extends CI_Controller
                 'amar_putusan' => $this->input->post('amar_putusan', TRUE),
             );
 
-            // Handle Upload Baru
+            // HANDLE UPLOAD FILE UTAMA
             if (!empty($_FILES['file']['name'])) {
                 $row = $this->Ta_produk_hukum_model->get_by_id($this->input->post('id_produk_hukum'));
                 if ($row->file != "" && file_exists("./uploads/produk_hukum/" . $row->file)) {
                     unlink("./uploads/produk_hukum/" . $row->file);
                 }
 
-                $this->load->library('upload');
                 $namafile = "Dokumen-" . date('YmdHis');
-                $config = array(
-                    'upload_path' => "./uploads/produk_hukum/",
-                    'allowed_types' => "pdf|doc|docx",
-                    'overwrite' => FALSE,
-                    'max_size' => "50480",
-                    'file_name' => $namafile
-                );
+                $config['upload_path']   = "./uploads/produk_hukum/";
+                $config['allowed_types'] = "pdf|doc|docx";
+                $config['file_name']     = $namafile;
+                $config['max_size']      = "50480";
+                
                 $this->upload->initialize($config);
                 if ($this->upload->do_upload('file')) {
                     $upload_data = $this->upload->data();
                     $data['file'] = $upload_data['file_name'];
+                }
+            }
+
+            // HANDLE UPLOAD FILE ABSTRAK (TAMBAHAN)
+            if (!empty($_FILES['file_abstrak']['name'])) {
+                $row = $this->Ta_produk_hukum_model->get_by_id($this->input->post('id_produk_hukum'));
+                
+                // Hapus abstrak lama jika ada
+                if ($row->file_abstrak != "" && file_exists("./uploads/produk_hukum/" . $row->file_abstrak)) {
+                    unlink("./uploads/produk_hukum/" . $row->file_abstrak);
+                }
+
+                $namafile_abs = "Abstrak-" . date('YmdHis');
+                $config_abs['upload_path']   = "./uploads/produk_hukum/";
+                $config_abs['allowed_types'] = "pdf|doc|docx";
+                $config_abs['file_name']     = $namafile_abs;
+                $config_abs['max_size']      = "50480";
+                
+                $this->upload->initialize($config_abs);
+                if ($this->upload->do_upload('file_abstrak')) {
+                    $up_abs = $this->upload->data();
+                    $data['file_abstrak'] = $up_abs['file_name'];
                 }
             }
 
